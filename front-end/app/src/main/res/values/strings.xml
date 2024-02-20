@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">HarmonyCare</string>
+    <string name="title_checklist">Checklist</string>
+    <string name="title_record">Record</string>
+    <string name="title_pattern">Pattern</string>
+    <string name="title_community">Community</string>
+    <string name="title_profile">Profile</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="google_server_client_id">185976520158-phphtutm302clototd3rqgecng4a4bg2.apps.googleusercontent.com</string>
+</resources>
