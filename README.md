@@ -1,1 +1,1 @@
-# 3rd-sc-7-HarmonyCare-App
+# 3rd-sc-7-HarmonyCare-Android
