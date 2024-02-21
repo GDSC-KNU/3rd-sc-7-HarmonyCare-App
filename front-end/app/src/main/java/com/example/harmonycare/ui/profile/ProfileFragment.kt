@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.harmonycare.R
 import com.example.harmonycare.data.SharedPreferencesManager
+import com.example.harmonycare.databinding.FragmentChecklistBinding
 import com.example.harmonycare.databinding.FragmentProfileBinding
 import com.example.harmonycare.retrofit.ApiManager
 import com.example.harmonycare.retrofit.ApiService
@@ -31,6 +32,12 @@ class ProfileFragment : Fragment() {
         return root
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (_binding == null) {
+            _binding = FragmentProfileBinding.inflate(layoutInflater)
+        }
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

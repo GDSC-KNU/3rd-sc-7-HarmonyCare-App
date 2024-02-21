@@ -12,6 +12,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.ContextCompat
+import com.example.harmonycare.databinding.FragmentChecklistBinding
 import java.util.Calendar
 
 
@@ -84,6 +85,13 @@ class PatternFragment : Fragment() {
             barTransaction.commit()
         }
         return root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (_binding == null) {
+            _binding = FragmentPatternBinding.inflate(layoutInflater)
+        }
     }
 
     /*private fun showDatePickerDialog() {

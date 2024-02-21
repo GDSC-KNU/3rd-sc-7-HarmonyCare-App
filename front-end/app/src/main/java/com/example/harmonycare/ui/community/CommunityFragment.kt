@@ -17,6 +17,7 @@ import com.example.harmonycare.R
 import com.example.harmonycare.data.Post
 import com.example.harmonycare.data.SharedPreferencesManager
 import com.example.harmonycare.databinding.CommunityDialogBinding
+import com.example.harmonycare.databinding.FragmentChecklistBinding
 import com.example.harmonycare.databinding.FragmentCommunityBinding
 import com.example.harmonycare.retrofit.ApiManager
 import com.example.harmonycare.retrofit.ApiService
@@ -87,6 +88,12 @@ class CommunityFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (_binding == null) {
+            _binding = FragmentCommunityBinding.inflate(layoutInflater)
+        }
+    }
     private fun getDataList(onDataLoaded: (List<Post>) -> Unit) {
         val accessToken = SharedPreferencesManager.getAccessToken()
 

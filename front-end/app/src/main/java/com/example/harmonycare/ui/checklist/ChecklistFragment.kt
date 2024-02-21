@@ -148,6 +148,13 @@ class ChecklistFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (_binding == null) {
+            _binding = FragmentChecklistBinding.inflate(layoutInflater)
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getDataList(onDataLoaded: (List<Checklist>) -> Unit) {
         val accessToken = SharedPreferencesManager.getAccessToken()

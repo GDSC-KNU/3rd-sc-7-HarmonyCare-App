@@ -21,6 +21,7 @@ import com.example.harmonycare.R
 import com.example.harmonycare.databinding.FragmentRecordBinding
 import com.example.harmonycare.data.Record
 import com.example.harmonycare.data.SharedPreferencesManager
+import com.example.harmonycare.databinding.FragmentChecklistBinding
 import com.example.harmonycare.databinding.RecordDialogBinding
 import com.example.harmonycare.retrofit.ApiManager
 import com.example.harmonycare.retrofit.ApiService
@@ -300,6 +301,13 @@ class RecordFragment : Fragment() {
                 }
             })
 
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (_binding == null) {
+            _binding = FragmentRecordBinding.inflate(layoutInflater)
         }
     }
 
