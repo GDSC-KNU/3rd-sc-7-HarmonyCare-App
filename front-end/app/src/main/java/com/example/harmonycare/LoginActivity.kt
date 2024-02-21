@@ -64,7 +64,8 @@ class LoginActivity : AppCompatActivity() {
                         apiManager.loginUser(authCode,
                             onResponse = { accessToken, hasBaby ->
                                 // accessToken을 저장하거나 필요한 작업을 수행합니다.
-                                showToast("accessToken 저장됨: $accessToken")
+                                //showToast("accessToken 저장됨: $accessToken")
+                                showToast("Login succeeded.")
                                 Log.d("kkang", "accessToken:$accessToken")
                                 SharedPreferencesManager.saveAccessToken(accessToken)
 
@@ -90,7 +91,7 @@ class LoginActivity : AppCompatActivity() {
 
 
                     } else {
-                        showToast("인증 코드가 없습니다.")
+                        showToast("There is no accessToken.")
                     }
                     return true // 리다이렉션된 링크 처리를 위해 true 반환
                 }

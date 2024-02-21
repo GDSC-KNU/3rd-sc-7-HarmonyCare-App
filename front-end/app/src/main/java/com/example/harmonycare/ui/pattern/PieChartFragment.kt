@@ -88,7 +88,7 @@ class PieChartFragment : Fragment() {
         val formattedDate = dateFormat.format(selectedDate.time)
 
         val apiService = RetrofitClient.createService(ApiService::class.java)
-        val call = apiService.getRecordsForDay(formattedDate, 1, "Bearer $authToken")
+        val call = apiService.getRecordsForDay(formattedDate, 2, "Bearer $authToken")
 
         call.enqueue(object : Callback<RecordGetResponse> {
             override fun onResponse(call: Call<RecordGetResponse>, response: Response<RecordGetResponse>) {

@@ -24,7 +24,6 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import com.example.harmonycare.databinding.FragmentBarChartBinding
-import com.example.harmonycare.databinding.FragmentProfileBinding
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -113,13 +112,6 @@ class BarChartFragment : Fragment() {
                 // Handle failure
             }
         })
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (_binding == null) {
-            _binding = FragmentBarChartBinding.inflate(layoutInflater)
-        }
     }
 
     private fun displayRecordsOnBarChart(recordResponse: List<RecordGetRequest>) {
