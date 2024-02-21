@@ -10,8 +10,8 @@
 
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/bar_chart"
-        android:layout_width="match_parent"
-        android:layout_height="351dp" />
+        android:layout_width="356dp"
+        android:layout_height="343dp" />
 
     <Button
         android:id="@+id/button"
