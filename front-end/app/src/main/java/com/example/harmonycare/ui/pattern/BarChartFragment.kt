@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import com.example.harmonycare.databinding.FragmentBarChartBinding
+import com.example.harmonycare.databinding.FragmentPatternBinding
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -65,6 +66,12 @@ class BarChartFragment : Fragment() {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (_binding == null) {
+            _binding = FragmentBarChartBinding.inflate(layoutInflater)
+        }
+    }
     private fun showDatePickerDialog() {
         val datePickerDialog = DatePickerDialog(
             requireContext(),
@@ -155,8 +162,7 @@ class BarChartFragment : Fragment() {
 
             // Add the entry for this record with corresponding color
             val duration = endTime - startTime
-            val percentage = duration.toFloat() / totalMinutesInDay * 100
-            entries.add(BarEntry(startTime.toFloat(), percentage))
+            entries.add(BarEntry(startTime.toFloat(), duration.toFloat()))
             colors.add(color)
         }
 
@@ -174,6 +180,7 @@ class BarChartFragment : Fragment() {
         // Refresh the chart
         mpBarChart.invalidate()
     }
+
 
     private fun getMinutesFromTimeString(timeString: String): Int {
         val parts = timeString.split(" ")[1].split(":")

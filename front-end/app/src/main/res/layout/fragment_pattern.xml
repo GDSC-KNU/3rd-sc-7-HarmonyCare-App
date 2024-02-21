@@ -13,7 +13,7 @@
         android:layout_marginTop="30dp"
 
         android:background="@drawable/item_bg_outline"
-        app:layout_constraintBottom_toTopOf="@+id/imageView5"
+        app:layout_constraintBottom_toTopOf="@+id/imagelinear"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.492"
         app:layout_constraintStart_toStartOf="parent"
@@ -49,57 +49,60 @@
             />
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="60dp"
-        android:layout_height="75dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="28dp"
-        android:src="@drawable/sleep"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/xmlLinear" />
-
-    <ImageView
-        android:id="@+id/imageView4"
-        android:layout_width="60dp"
-        android:layout_height="75dp"
-        android:layout_marginStart="24dp"
+    <LinearLayout
+        android:id="@+id/imagelinear"
+        android:layout_width="366dp"
+        android:layout_height="78dp"
         android:layout_marginTop="30dp"
-        android:src="@drawable/meal"
-        app:layout_constraintStart_toEndOf="@+id/imageView3"
-        app:layout_constraintTop_toBottomOf="@+id/xmlLinear" />
-
-    <ImageView
-        android:id="@+id/imageView6"
-        android:layout_width="60dp"
-        android:layout_height="75dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="24dp"
-        android:src="@drawable/diaper"
-        app:layout_constraintEnd_toStartOf="@+id/imageView7"
-        app:layout_constraintTop_toBottomOf="@+id/xmlLinear" />
-
-    <ImageView
-        android:id="@+id/imageView7"
-        android:layout_width="60dp"
-        android:layout_height="75dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="20dp"
-        android:src="@drawable/bath"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/xmlLinear" />
+        app:layout_constraintHorizontal_bias="0.492"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/xmlLinear">
 
-    <ImageView
-        android:id="@+id/imageView5"
-        android:layout_width="60dp"
-        android:layout_height="75dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="24dp"
-        android:src="@drawable/play"
-        app:layout_constraintEnd_toStartOf="@+id/imageView6"
-        app:layout_constraintStart_toEndOf="@+id/imageView4"
-        app:layout_constraintTop_toBottomOf="@+id/xmlLinear" />
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="wrap_content"
+            android:layout_height="75dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:src="@drawable/sleep" />
+
+        <ImageView
+            android:id="@+id/imageView4"
+            android:layout_width="60dp"
+            android:layout_height="75dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:src="@drawable/meal" />
+
+        <ImageView
+            android:id="@+id/imageView6"
+            android:layout_width="60dp"
+            android:layout_height="75dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:src="@drawable/diaper" />
+
+        <ImageView
+            android:id="@+id/imageView7"
+            android:layout_width="60dp"
+            android:layout_height="75dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:src="@drawable/bath" />
+
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="60dp"
+            android:layout_height="75dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:src="@drawable/play" />
+
+    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/frag"
@@ -110,7 +113,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView5"
+        app:layout_constraintTop_toBottomOf="@+id/imagelinear"
         app:layout_constraintVertical_bias="0.888">
 
     </FrameLayout>

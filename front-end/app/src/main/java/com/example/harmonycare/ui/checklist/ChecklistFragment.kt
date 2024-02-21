@@ -64,7 +64,7 @@ class ChecklistFragment : Fragment() {
 
                     val period = Period.between(specificDate.toLocalDate(), currentDate.toLocalDate())
                     var months = period.toTotalMonths().toInt()
-                    if (months == 0) months -= 1
+                    if (months != 0) months -= 1
 
                     val heightArray = resources.getStringArray(R.array.height_array)
                     val weightArray = resources.getStringArray(R.array.weight_array)
