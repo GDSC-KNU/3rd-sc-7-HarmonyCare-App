@@ -1,6 +1,8 @@
 package com.example.harmonycare
 
+import android.os.Build
 import android.os.Bundle
+import androidx.annotation.RequiresApi
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
@@ -8,7 +10,18 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.harmonycare.data.SharedPreferencesManager
 import com.example.harmonycare.databinding.ActivityMainBinding
+import com.example.harmonycare.retrofit.ApiManager
+import com.example.harmonycare.retrofit.ApiService
+import com.example.harmonycare.retrofit.RetrofitClient
+import com.example.harmonycare.ui.checklist.ChecklistFragment
+import com.example.harmonycare.ui.record.RecordFragment
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.Period
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 class MainActivity : AppCompatActivity() {
 
@@ -45,4 +58,5 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 }

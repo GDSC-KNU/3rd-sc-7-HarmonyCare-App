@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.harmonycare.R
 import com.example.harmonycare.data.Checklist
@@ -23,6 +24,7 @@ import com.example.harmonycare.retrofit.ApiService
 import com.example.harmonycare.retrofit.RetrofitClient
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.Period
 import java.time.format.DateTimeFormatter
@@ -57,14 +59,14 @@ class ChecklistFragment : Fragment() {
                 val apiManager = ApiManager(apiService)
 
                 apiManager.getProfile(accessToken) {
-                    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd' 'HH:mm:ss")
                     val specificDate = LocalDateTime.parse(it.babyBirthDate, formatter)
 
                     val currentDate = LocalDateTime.now()
 
                     val period = Period.between(specificDate.toLocalDate(), currentDate.toLocalDate())
                     var months = period.toTotalMonths().toInt()
-                    if (months == 0) months -= 1
+                    if (months != 0) months -= 1
 
                     val heightArray = resources.getStringArray(R.array.height_array)
                     val weightArray = resources.getStringArray(R.array.weight_array)
@@ -76,9 +78,9 @@ class ChecklistFragment : Fragment() {
                     bottomDialogBinding.textviewGrowth.text = growthArray[months]
                 }
 
+                val today = LocalDateTime.now().toLocalDate().toString()
 
-
-                apiManager.getTip(accessToken) {
+                apiManager.getTip(accessToken, today) {
                     if (it == null) bottomDialogBinding.textviewTip.text = "No tips"
                     else bottomDialogBinding.textviewTip.text = it
                 }
@@ -99,7 +101,7 @@ class ChecklistFragment : Fragment() {
 
                 if (bottomDialogBinding.toggleButtonMon.isChecked) days.add("MONDAY")
                 if (bottomDialogBinding.toggleButtonTue.isChecked) days.add("TUESDAY")
-                if (bottomDialogBinding.toggleButtonWed.isChecked) days.add("WEDNEDSDAY")
+                if (bottomDialogBinding.toggleButtonWed.isChecked) days.add("WEDNESDAY")
                 if (bottomDialogBinding.toggleButtonThu.isChecked) days.add("THURSDAY")
                 if (bottomDialogBinding.toggleButtonFri.isChecked) days.add("FRIDAY")
                 if (bottomDialogBinding.toggleButtonSat.isChecked) days.add("SATURDAY")
@@ -148,11 +150,16 @@ class ChecklistFragment : Fragment() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {
         super.onResume()
         if (_binding == null) {
             _binding = FragmentChecklistBinding.inflate(layoutInflater)
         }
+        activity?.let {
+            (it as AppCompatActivity).supportActionBar?.title = LocalDate.now().toString()
+        }
+        getDataListAndSetAdapter()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -163,8 +170,9 @@ class ChecklistFragment : Fragment() {
             val apiService = RetrofitClient.retrofit.create(ApiService::class.java)
             val apiManager = ApiManager(apiService)
 
+            val today = LocalDateTime.now().toLocalDate().toString()
 
-            apiManager.getChecklist(accessToken,
+            apiManager.getChecklist(accessToken, today,
                 { checklistData ->
                     if (checklistData != null) {
                         onDataLoaded(checklistData)
@@ -172,6 +180,12 @@ class ChecklistFragment : Fragment() {
                 }
             )
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun dateTimeToString(dateTime: LocalDateTime): String {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd' 'HH:mm:ss")
+        return dateTime.format(formatter)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -232,7 +246,7 @@ class ChecklistFragment : Fragment() {
         dialogBinding.timePicker.minute = checklist.checkTime.minute
         if (checklist.days.contains("MONDAY")) dialogBinding.toggleButtonMon.isChecked = true
         if (checklist.days.contains("TUESDAY")) dialogBinding.toggleButtonTue.isChecked = true
-        if (checklist.days.contains("WEDNEDSDAY")) dialogBinding.toggleButtonWed.isChecked = true
+        if (checklist.days.contains("WEDNESDAY")) dialogBinding.toggleButtonWed.isChecked = true
         if (checklist.days.contains("THURSDAY")) dialogBinding.toggleButtonThu.isChecked = true
         if (checklist.days.contains("FRIDAY")) dialogBinding.toggleButtonFri.isChecked = true
         if (checklist.days.contains("SATURDAY")) dialogBinding.toggleButtonSat.isChecked = true
@@ -247,7 +261,7 @@ class ChecklistFragment : Fragment() {
             val days = mutableListOf<String>()
             if (dialogBinding.toggleButtonMon.isChecked) days.add("MONDAY")
             if (dialogBinding.toggleButtonTue.isChecked) days.add("TUESDAY")
-            if (dialogBinding.toggleButtonWed.isChecked) days.add("WEDNEDSDAY")
+            if (dialogBinding.toggleButtonWed.isChecked) days.add("WEDNESDAY")
             if (dialogBinding.toggleButtonThu.isChecked) days.add("THURSDAY")
             if (dialogBinding.toggleButtonFri.isChecked) days.add("FRIDAY")
             if (dialogBinding.toggleButtonSat.isChecked) days.add("SATURDAY")

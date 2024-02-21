@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.harmonycare.R
 import com.example.harmonycare.data.SharedPreferencesManager
-import com.example.harmonycare.databinding.FragmentChecklistBinding
 import com.example.harmonycare.databinding.FragmentProfileBinding
 import com.example.harmonycare.retrofit.ApiManager
 import com.example.harmonycare.retrofit.ApiService

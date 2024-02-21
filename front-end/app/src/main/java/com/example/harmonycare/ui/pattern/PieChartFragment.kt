@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.harmonycare.R
+import com.example.harmonycare.data.SharedPreferencesManager
 import com.example.harmonycare.retrofit.ApiService
 import com.example.harmonycare.retrofit.RecordGetRequest
 import com.example.harmonycare.retrofit.RecordGetResponse
@@ -28,13 +29,14 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import com.example.harmonycare.databinding.FragmentPieChartBinding
+import com.example.harmonycare.databinding.FragmentProfileBinding
 
 class PieChartFragment : Fragment() {
 
     private var _binding: FragmentPieChartBinding? = null
     private val binding get() = _binding!!
     private lateinit var selectedDate: Calendar
-    private lateinit var sharedPreferences: SharedPreferences
+
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,10 +44,7 @@ class PieChartFragment : Fragment() {
     ): View {
         _binding = FragmentPieChartBinding.inflate(inflater, container, false)
         val root: View = binding.root
-        //sharedPreference 초기화
-        sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        // SharedPreferences에서 authcode 가져오기
-        val accessToken = sharedPreferences.getString("accessToken", null)
+        val accessToken = SharedPreferencesManager.getAccessToken()
 
         selectedDate = Calendar.getInstance()
         updateSelectedDateButtonText()
@@ -109,6 +108,13 @@ class PieChartFragment : Fragment() {
                 // Handle failure
             }
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (_binding == null) {
+            _binding = FragmentPieChartBinding.inflate(layoutInflater)
+        }
     }
 
     private fun displayRecordsOnPieChart(recordResponse: List<RecordGetRequest>) {

@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.harmonycare.R
+import com.example.harmonycare.data.SharedPreferencesManager
 import com.example.harmonycare.retrofit.ApiService
 import com.example.harmonycare.retrofit.RecordGetRequest
 import com.example.harmonycare.retrofit.RecordGetResponse
@@ -23,6 +24,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import com.example.harmonycare.databinding.FragmentBarChartBinding
+import com.example.harmonycare.databinding.FragmentProfileBinding
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -33,7 +35,6 @@ class BarChartFragment : Fragment() {
     private var _binding: FragmentBarChartBinding? = null
     private val binding get() = _binding!!
     private lateinit var selectedDate: Calendar
-    private lateinit var sharedPreferences: SharedPreferences
 
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
@@ -42,10 +43,8 @@ class BarChartFragment : Fragment() {
     ): View {
         _binding = FragmentBarChartBinding.inflate(inflater, container, false)
         val root: View = binding.root
-        //sharedPreference 초기화
-        sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        // SharedPreferences에서 authcode 가져오기
-        val accessToken = sharedPreferences.getString("accessToken", null)
+
+        val accessToken = SharedPreferencesManager.getAccessToken()
 
         selectedDate = Calendar.getInstance()
         updateSelectedDateButtonText()
@@ -114,6 +113,13 @@ class BarChartFragment : Fragment() {
                 // Handle failure
             }
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (_binding == null) {
+            _binding = FragmentBarChartBinding.inflate(layoutInflater)
+        }
     }
 
     private fun displayRecordsOnBarChart(recordResponse: List<RecordGetRequest>) {

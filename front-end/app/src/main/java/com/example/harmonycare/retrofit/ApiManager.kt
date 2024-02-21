@@ -66,6 +66,7 @@ interface ApiService {
 
     @GET("/api/v1/checklist/me")
     fun getChecklist(
+        @Query("day") day: String,
         @Header("Authorization") authToken: String
     ): Call<ApiSuccessResultListChecklistReadResponse>
 
@@ -141,6 +142,7 @@ interface ApiService {
 
     @GET("/api/v1/checklist/tip")
     fun getTip(
+        @Query("day") day: String,
         @Header("Authorization") authToken: String
     ): Call<TipResponse>
 }
@@ -281,8 +283,8 @@ class ApiManager(private val apiService: ApiService) {
         })
     }
 
-    fun getChecklist(accessToken: String, checklistData: (List<Checklist>) -> Unit) {
-        val call = apiService.getChecklist("Bearer $accessToken")
+    fun getChecklist(accessToken: String, today: String, checklistData: (List<Checklist>) -> Unit) {
+        val call = apiService.getChecklist(today,"Bearer $accessToken")
         call.enqueue(object: Callback<ApiSuccessResultListChecklistReadResponse> {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(
@@ -596,8 +598,8 @@ class ApiManager(private val apiService: ApiService) {
         }
     }
 
-    fun getTip(accessToken: String, onResponse: (String) -> Unit) {
-        val call = apiService.getTip("Bearer $accessToken")
+    fun getTip(accessToken: String, today: String, onResponse: (String) -> Unit) {
+        val call = apiService.getTip(today,"Bearer $accessToken")
         call.enqueue(object: Callback<TipResponse> {
             override fun onResponse(call: Call<TipResponse>, response: Response<TipResponse>) {
                 if (response.isSuccessful) {
@@ -726,4 +728,8 @@ data class ProfileReadResponse(
 data class TipResponse(
     val status: Int,
     val response: String
+)
+
+data class getChecklistRequest(
+    val today: String
 )

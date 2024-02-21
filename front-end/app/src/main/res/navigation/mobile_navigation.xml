@@ -8,13 +8,13 @@
     <fragment
         android:id="@+id/navigation_checklist"
         android:name="com.example.harmonycare.ui.checklist.ChecklistFragment"
-        android:label="Checklist"
+        android:label=""
         tools:layout="@layout/fragment_checklist"/>
 
     <fragment
         android:id="@+id/navigation_record"
         android:name="com.example.harmonycare.ui.record.RecordFragment"
-        android:label="Record"
+        android:label=""
         tools:layout="@layout/fragment_record"/>
 
     <fragment

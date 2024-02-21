@@ -16,6 +16,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.harmonycare.R
 import com.example.harmonycare.databinding.FragmentRecordBinding
@@ -32,6 +33,7 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 class RecordFragment : Fragment() {
 
@@ -94,7 +96,7 @@ class RecordFragment : Fragment() {
             val apiManager = ApiManager(apiService)
 
 
-            apiManager.getRecordsForDay(LocalDateTime.now().toLocalDate().toString(), 1, "Bearer $accessToken",
+            apiManager.getRecordsForDay(LocalDateTime.now().toLocalDate().toString(), 0, "Bearer $accessToken",
                 { response ->
                     if (response != null) {
                         onDataLoaded(response)
@@ -304,10 +306,34 @@ class RecordFragment : Fragment() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {
         super.onResume()
         if (_binding == null) {
             _binding = FragmentRecordBinding.inflate(layoutInflater)
+        }
+        activity?.let { fragmentActivity ->
+            val accessToken = SharedPreferencesManager.getAccessToken()
+
+            if (!accessToken.isNullOrEmpty()) {
+                val apiService = RetrofitClient.retrofit.create(ApiService::class.java)
+                val apiManager = ApiManager(apiService)
+
+                apiManager.getProfile(accessToken) { profile ->
+                    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                    val specificDate = LocalDateTime.parse(profile.babyBirthDate, formatter)
+
+                    val currentDate = LocalDateTime.now()
+
+                    // 특정 날짜로부터 현재까지의 시간 간격을 계산합니다.
+                    val daysPassed = ChronoUnit.DAYS.between(specificDate, currentDate)
+                    (fragmentActivity as AppCompatActivity).supportActionBar?.title =
+                        "${LocalDate.now()} (D+$daysPassed)"
+                }
+
+            } else {
+                (fragmentActivity as AppCompatActivity).supportActionBar?.title = LocalDate.now().toString()
+            }
         }
     }
 

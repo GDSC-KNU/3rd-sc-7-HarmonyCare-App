@@ -11,6 +11,7 @@ import android.widget.Toast
 import com.example.harmonycare.MainActivity
 import com.example.harmonycare.R
 import com.example.harmonycare.data.Baby
+import com.example.harmonycare.data.SharedPreferencesManager
 import com.example.harmonycare.retrofit.ApiService
 import com.example.harmonycare.retrofit.RetrofitClient
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -23,18 +24,14 @@ class AddBabyActivity : AppCompatActivity() {
     private lateinit var editTextName: EditText
     private lateinit var editTextDOB: EditText
     private lateinit var buttonSubmit: Button
-    private lateinit var sharedPreferences: SharedPreferences
 
 
     private val apiService = RetrofitClient.createService(ApiService::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        // SharedPreferences 초기화
-        sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-
         // SharedPreferences에서 authcode 가져오기
-        val accessToken = sharedPreferences.getString("accessToken", null)
+        val accessToken = SharedPreferencesManager.getAccessToken()
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_baby)
