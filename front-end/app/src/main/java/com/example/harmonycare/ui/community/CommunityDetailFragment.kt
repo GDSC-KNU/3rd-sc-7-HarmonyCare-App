@@ -68,6 +68,8 @@ class CommunityDetailFragment : Fragment() {
                     val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.hideSoftInputFromWindow(binding.editTextComment.windowToken, 0) // 키보드를 숨깁니다.
                     binding.editTextComment.clearFocus()
+                } else {
+                    makeToast(requireContext(), "please input comment")
                 }
             }
         }

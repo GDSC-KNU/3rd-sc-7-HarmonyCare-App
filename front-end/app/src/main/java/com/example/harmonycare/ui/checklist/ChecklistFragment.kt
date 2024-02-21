@@ -16,6 +16,7 @@ import com.example.harmonycare.R
 import com.example.harmonycare.data.Checklist
 import com.example.harmonycare.data.SharedPreferencesManager
 import com.example.harmonycare.databinding.ChecklistDialogBinding
+import com.example.harmonycare.databinding.DialogTipBinding
 import com.example.harmonycare.databinding.FragmentChecklistBinding
 import com.example.harmonycare.retrofit.ApiManager
 import com.example.harmonycare.retrofit.ApiService
@@ -23,6 +24,7 @@ import com.example.harmonycare.retrofit.RetrofitClient
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import java.time.LocalDateTime
+import java.time.Period
 import java.time.format.DateTimeFormatter
 
 class ChecklistFragment : Fragment() {
@@ -43,6 +45,48 @@ class ChecklistFragment : Fragment() {
 
         getDataListAndSetAdapter()
 
+        binding.fabTip.setOnClickListener {
+            val bottomSheetDialog = BottomSheetDialog(requireContext())
+            val bottomDialogBinding = DialogTipBinding.inflate(layoutInflater)
+            bottomSheetDialog.setContentView(bottomDialogBinding.root)
+
+            val accessToken = SharedPreferencesManager.getAccessToken()
+
+            if (!accessToken.isNullOrEmpty()) {
+                val apiService = RetrofitClient.retrofit.create(ApiService::class.java)
+                val apiManager = ApiManager(apiService)
+
+                apiManager.getProfile(accessToken) {
+                    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                    val specificDate = LocalDateTime.parse(it.babyBirthDate, formatter)
+
+                    val currentDate = LocalDateTime.now()
+
+                    val period = Period.between(specificDate.toLocalDate(), currentDate.toLocalDate())
+                    var months = period.toTotalMonths().toInt()
+                    if (months == 0) months -= 1
+
+                    val heightArray = resources.getStringArray(R.array.height_array)
+                    val weightArray = resources.getStringArray(R.array.weight_array)
+                    val growthArray = resources.getStringArray(R.array.growth_array)
+
+                    bottomDialogBinding.textviewMonth.text = "${months+1} months old"
+                    bottomDialogBinding.textviewHeight.text = heightArray[months]
+                    bottomDialogBinding.textviewWeight.text = weightArray[months]
+                    bottomDialogBinding.textviewGrowth.text = growthArray[months]
+                }
+
+
+
+                apiManager.getTip(accessToken) {
+                    if (it == null) bottomDialogBinding.textviewTip.text = "No tips"
+                    else bottomDialogBinding.textviewTip.text = it
+                }
+            }
+
+            bottomSheetDialog.show()
+        }
+
         binding.fab.setOnClickListener {
             val bottomSheetDialog = BottomSheetDialog(requireContext())
             val bottomDialogBinding = ChecklistDialogBinding.inflate(layoutInflater)
@@ -50,21 +94,31 @@ class ChecklistFragment : Fragment() {
             bottomDialogBinding.timePicker.setIs24HourView(true)
 
             bottomDialogBinding.buttonSave.setOnClickListener {
+                val title = bottomDialogBinding.editText.text.toString()
+                val days = mutableListOf<String>()
+
+                if (bottomDialogBinding.toggleButtonMon.isChecked) days.add("MONDAY")
+                if (bottomDialogBinding.toggleButtonTue.isChecked) days.add("TUESDAY")
+                if (bottomDialogBinding.toggleButtonWed.isChecked) days.add("WEDNEDSDAY")
+                if (bottomDialogBinding.toggleButtonThu.isChecked) days.add("THURSDAY")
+                if (bottomDialogBinding.toggleButtonFri.isChecked) days.add("FRIDAY")
+                if (bottomDialogBinding.toggleButtonSat.isChecked) days.add("SATURDAY")
+                if (bottomDialogBinding.toggleButtonSun.isChecked) days.add("SUNDAY")
+
+                if (title.isBlank()) {
+                    makeToast(requireContext(), "please input title")
+                    return@setOnClickListener
+                }
+                if (days.isEmpty()) {
+                    makeToast(requireContext(), "please select days of week")
+                    return@setOnClickListener
+                }
                 val accessToken = SharedPreferencesManager.getAccessToken()
 
                 if (!accessToken.isNullOrEmpty()) {
                     val apiService = RetrofitClient.retrofit.create(ApiService::class.java)
                     val apiManager = ApiManager(apiService)
 
-                    val title = bottomDialogBinding.editText.text.toString()
-                    val days = mutableListOf<String>()
-                    if (bottomDialogBinding.toggleButtonMon.isChecked) days.add("MONDAY")
-                    if (bottomDialogBinding.toggleButtonTue.isChecked) days.add("TUESDAY")
-                    if (bottomDialogBinding.toggleButtonWed.isChecked) days.add("WEDNEDSDAY")
-                    if (bottomDialogBinding.toggleButtonThu.isChecked) days.add("THURSDAY")
-                    if (bottomDialogBinding.toggleButtonFri.isChecked) days.add("FRIDAY")
-                    if (bottomDialogBinding.toggleButtonSat.isChecked) days.add("SATURDAY")
-                    if (bottomDialogBinding.toggleButtonSun.isChecked) days.add("SUNDAY")
                     val checkTime = hourToString(bottomDialogBinding.timePicker.hour, bottomDialogBinding.timePicker.minute)
                     apiManager.saveChecklist(accessToken, title, days, checkTime, {
                         if (it == true) {
@@ -182,31 +236,42 @@ class ChecklistFragment : Fragment() {
         }
 
         dialogBinding.buttonSave.setOnClickListener {
+            val title = dialogBinding.editText.text.toString()
+            val days = mutableListOf<String>()
+            if (dialogBinding.toggleButtonMon.isChecked) days.add("MONDAY")
+            if (dialogBinding.toggleButtonTue.isChecked) days.add("TUESDAY")
+            if (dialogBinding.toggleButtonWed.isChecked) days.add("WEDNEDSDAY")
+            if (dialogBinding.toggleButtonThu.isChecked) days.add("THURSDAY")
+            if (dialogBinding.toggleButtonFri.isChecked) days.add("FRIDAY")
+            if (dialogBinding.toggleButtonSat.isChecked) days.add("SATURDAY")
+            if (dialogBinding.toggleButtonSun.isChecked) days.add("SUNDAY")
+
+            if (title.isBlank()) {
+                makeToast(requireContext(), "please input title text")
+                return@setOnClickListener
+            }
+            if (days.isEmpty()) {
+                makeToast(requireContext(), "please select days of week")
+                return@setOnClickListener
+            }
             val accessToken = SharedPreferencesManager.getAccessToken()
 
             if (!accessToken.isNullOrEmpty()) {
                 val apiService = RetrofitClient.retrofit.create(ApiService::class.java)
                 val apiManager = ApiManager(apiService)
 
-                val title = dialogBinding.editText.text.toString()
-                val days = mutableListOf<String>()
-                if (dialogBinding.toggleButtonMon.isChecked) days.add("MONDAY")
-                if (dialogBinding.toggleButtonTue.isChecked) days.add("TUESDAY")
-                if (dialogBinding.toggleButtonWed.isChecked) days.add("WEDNEDSDAY")
-                if (dialogBinding.toggleButtonThu.isChecked) days.add("THURSDAY")
-                if (dialogBinding.toggleButtonFri.isChecked) days.add("FRIDAY")
-                if (dialogBinding.toggleButtonSat.isChecked) days.add("SATURDAY")
-                if (dialogBinding.toggleButtonSun.isChecked) days.add("SUNDAY")
-                val checkTime = hourToString(dialogBinding.timePicker.hour, dialogBinding.timePicker.minute)
+
+                val checkTime =
+                    hourToString(dialogBinding.timePicker.hour, dialogBinding.timePicker.minute)
                 apiManager.updateChecklist(
-                    checklist.checklistId, accessToken, title, days, checkTime,
-                    { response ->
+                    checklist.checklistId, accessToken, title, days, checkTime
+                ) { response ->
                     if (response == true) {
                         getDataListAndSetAdapter()
                     } else {
                         makeToast(requireContext(), "Failed to update checklist")
                     }
-                })
+                }
 
             }
             bottomSheetDialog.dismiss()

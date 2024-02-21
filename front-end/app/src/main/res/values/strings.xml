@@ -11,4 +11,91 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="google_server_client_id">185976520158-phphtutm302clototd3rqgecng4a4bg2.apps.googleusercontent.com</string>
+
+    <string-array name="weight_array">
+        <item>49~60cm</item>
+        <item>52~65cm</item>
+        <item>56~68cm</item>
+        <item>59~70cm</item>
+        <item>60~72cm</item>
+        <item>62~74cm</item>
+        <item>64~76cm</item>
+        <item>65~77cm</item>
+        <item>67~79cm</item>
+        <item>68~79cm</item>
+        <item>72~80cm</item>
+        <item>73~81cm</item>
+    </string-array>
+    <string-array name="height_array">
+        <item>3~5.7kg</item>
+        <item>3.9~7.4kg</item>
+        <item>5~8.4kg</item>
+        <item>5.6~9.2kg</item>
+        <item>5.9kg~9.6kg</item>
+        <item>6.2~10kg</item>
+        <item>6.6~11kg</item>
+        <item>6.8~11kg</item>
+        <item>7~11.4kg</item>
+        <item>7.4~11kg</item>
+        <item>8~11kg</item>
+        <item>8.8~12kg</item>
+    </string-array>
+    <string-array name="growth_array">
+        <item>"Distinguish between mother's voice.
+Watch the toy move.
+My limbs are active."
+</item>
+        <item>"I smile at my mom’s face.
+Stretch out your arms and legs.
+I also lie down and lift my chest.
+Start babbling."</item>
+        <item>"Clear your own throat.
+It reacts to sounds and smells.
+Blink your eyes.
+Suck your finger.
+Waving my arms and kicking"</item>
+        <item>"My hair becomes stronger.
+You can extend your arms and grab moving objects.
+Responds to colored toys.
+I can tell my mom’s emotional changes.
+The baby's emotional expression also becomes richer."</item>
+        <item>"My hair is falling out.
+Neck movement becomes more active.
+As your eyesight develops, you become more interested in objects.
+They put everything they see into their mouths.
+You can rock your body left and right and flip over."</item>
+        <item>"Teeth are starting to grow.
+You can lie down and roll over.
+Sit down, extend your arms in the air, and pull them back.
+He tries to hold the toy in both hands, but keeps losing it."</item>
+        <item>"When teething, you bite your fingers.
+Their memory develops, allowing them to explore hidden objects and imitate their mother's actions.
+You can sit alone.
+It is good to be careful about cavities and prevent mouth shape deformation."</item>
+        <item>"I pick up and eat food alone.
+You can move objects from hand to hand.
+Since separation anxiety appears and the child does not want to be separated from its mother, you need to express your love sufficiently.
+It would be good to check the level of motor development."</item>
+        <item>"Start saying repeated consonants.
+They respond to their own name.
+Grasp objects with your thumb and forefinger.
+Find a toy under the handkerchief.
+It is good to check the excretion cycle and the condition of the stool."</item>
+        <item>"He can crawl and stand on his own.
+He is very curious and gets angry when toys are taken away.
+Imitate other people's actions.
+I can hold my mom’s hand and take a step or two.
+As you become more assertive, it's easy for you to cry and throw tantrums."</item>
+        <item>"I can stand up on my own.
+We can walk holding hands.
+Grasp small objects with your thumb and index finger.
+I like to explore with my hands.
+I can hold a cup and drink by myself.
+People you see often will recognize you even after a few days.
+Adjust baby food according to diarrhea/indigestion"</item>
+        <item>"I can distinguish between praise and scolding.
+Shows interest in colorful and vivid pictures.
+You can play simple ball games.
+You can adjust your posture when dressing."</item>
+    </string-array>
 </resources>

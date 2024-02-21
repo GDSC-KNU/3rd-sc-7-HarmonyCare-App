@@ -138,6 +138,11 @@ interface ApiService {
         @Path("communityId") communityId: Int,
         @Header("Authorization") authToken: String
     ): Call<RecordDeleteResponse>
+
+    @GET("/api/v1/checklist/tip")
+    fun getTip(
+        @Header("Authorization") authToken: String
+    ): Call<TipResponse>
 }
 
 class ApiManager(private val apiService: ApiService) {
@@ -544,7 +549,6 @@ class ApiManager(private val apiService: ApiService) {
             ) {
                 Log.d("kkang", "get my post failed")
             }
-
         })
     }
 
@@ -592,6 +596,20 @@ class ApiManager(private val apiService: ApiService) {
         }
     }
 
+    fun getTip(accessToken: String, onResponse: (String) -> Unit) {
+        val call = apiService.getTip("Bearer $accessToken")
+        call.enqueue(object: Callback<TipResponse> {
+            override fun onResponse(call: Call<TipResponse>, response: Response<TipResponse>) {
+                if (response.isSuccessful) {
+                    response.body()?.let { onResponse(it.response) }
+                }
+            }
+
+            override fun onFailure(call: Call<TipResponse>, t: Throwable) {
+            }
+
+        })
+    }
 }
 
 // API 응답을 모델링할 클래스 정의
@@ -698,9 +716,14 @@ data class ApiSuccessResultProfileReadResponse(
     val response: ProfileReadResponse
 )
 
-data class 	ProfileReadResponse(
+data class ProfileReadResponse(
     val parentName: String,
     val email: String,
     val babyName: String,
     val babyBirthDate: String
+)
+
+data class TipResponse(
+    val status: Int,
+    val response: String
 )

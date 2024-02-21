@@ -50,25 +50,29 @@ class CommunityFragment : Fragment() {
                 fullDialog.dismiss()
             }
             fullDialogBinding.buttonSave.setOnClickListener {
-                val accessToken = SharedPreferencesManager.getAccessToken()
+                val title = fullDialogBinding.editTitle.text.toString()
+                val content = fullDialogBinding.editContent.text.toString()
 
-                if (!accessToken.isNullOrEmpty()) {
-                    val apiService = RetrofitClient.retrofit.create(ApiService::class.java)
-                    val apiManager = ApiManager(apiService)
+                if (title.isBlank() or content.isBlank()) {
+                    makeToast(requireContext(), "please input content")
+                } else {
+                    val accessToken = SharedPreferencesManager.getAccessToken()
 
-                    val title = fullDialogBinding.editTitle.text.toString()
-                    val content = fullDialogBinding.editContent.text.toString()
+                    if (!accessToken.isNullOrEmpty()) {
+                        val apiService = RetrofitClient.retrofit.create(ApiService::class.java)
+                        val apiManager = ApiManager(apiService)
 
-                    apiManager.saveCommunity(accessToken, title, content, onResponse = {
-                        if (it == true) {
-                            getDataListAndSetAdapter()
-                        }
-                        else {
-                            makeToast(requireContext(), "community save failed")
-                        }
-                    })
+
+                        apiManager.saveCommunity(accessToken, title, content, onResponse = {
+                            if (it == true) {
+                                getDataListAndSetAdapter()
+                            } else {
+                                makeToast(requireContext(), "community save failed")
+                            }
+                        })
+                    }
+                    fullDialog.dismiss()
                 }
-                fullDialog.dismiss()
             }
 
             fullDialog.show()
