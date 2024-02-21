@@ -12,35 +12,35 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.harmonycare.R
-import com.example.harmonycare.databinding.FragmentPieChartBinding
 import com.example.harmonycare.retrofit.ApiService
 import com.example.harmonycare.retrofit.RecordGetRequest
 import com.example.harmonycare.retrofit.RecordGetResponse
 import com.example.harmonycare.retrofit.RetrofitClient
-import com.github.mikephil.charting.animation.Easing
-import com.github.mikephil.charting.charts.PieChart
-import com.github.mikephil.charting.data.PieData
-import com.github.mikephil.charting.data.PieDataSet
-import com.github.mikephil.charting.data.PieEntry
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import com.example.harmonycare.databinding.FragmentBarChartBinding
+import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
 
 class BarChartFragment : Fragment() {
 
-    private var _binding: FragmentPieChartBinding? = null
+    private var _binding: FragmentBarChartBinding? = null
     private val binding get() = _binding!!
     private lateinit var selectedDate: Calendar
     private lateinit var sharedPreferences: SharedPreferences
+
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentPieChartBinding.inflate(inflater, container, false)
+        _binding = FragmentBarChartBinding.inflate(inflater, container, false)
         val root: View = binding.root
         //sharedPreference 초기화
         sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
@@ -79,24 +79,29 @@ class BarChartFragment : Fragment() {
         datePickerDialog.datePicker.maxDate = System.currentTimeMillis()
         datePickerDialog.show()
     }
+
     private fun updateSelectedDateButtonText() {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val formattedDate = dateFormat.format(selectedDate.time)
         binding.button.text = formattedDate
     }
+
     private fun fetchRecordsForSelectedDate(authToken: String) {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val formattedDate = dateFormat.format(selectedDate.time)
 
         val apiService = RetrofitClient.createService(ApiService::class.java)
-        val call = apiService.getRecordsForDay(formattedDate, 1, "Bearer $authToken")
+        val call = apiService.getRecordsForDay(formattedDate, 7, "Bearer $authToken")
 
         call.enqueue(object : Callback<RecordGetResponse> {
-            override fun onResponse(call: Call<RecordGetResponse>, response: Response<RecordGetResponse>) {
+            override fun onResponse(
+                call: Call<RecordGetResponse>,
+                response: Response<RecordGetResponse>
+            ) {
                 if (response.isSuccessful) {
                     val recordResponse = response.body()
                     if (recordResponse != null) {
-                        displayRecordsOnPieChart(recordResponse.response)
+                        displayRecordsOnBarChart(recordResponse.response)
                     } else {
                         // Handle null response
                     }
@@ -111,28 +116,22 @@ class BarChartFragment : Fragment() {
         })
     }
 
-    private fun displayRecordsOnPieChart(recordResponse: List<RecordGetRequest>) {
-        val mpPieChart: PieChart = _binding!!.pieChart
+    private fun displayRecordsOnBarChart(recordResponse: List<RecordGetRequest>) {
+        val mpBarChart: BarChart = _binding!!.barChart
 
         // Clear any existing entries
-        mpPieChart.clear()
-        mpPieChart.setUsePercentValues(false) // 퍼센트 값 사용 안 함
-        mpPieChart.setExtraOffsets(5f, 10f, 5f, 5f)
-        mpPieChart.legend.isEnabled = false
-        mpPieChart.description.isEnabled = false
-        mpPieChart.isDrawHoleEnabled = true
-        mpPieChart.setHoleColor(Color.WHITE)
-        mpPieChart.transparentCircleRadius = 61f
-        mpPieChart.animateY(1000, Easing.EaseInOutCubic)
-        mpPieChart.centerText = "Day + 3"
-        mpPieChart.setCenterTextSize(20f)
-        mpPieChart.invalidate()
+        mpBarChart.clear()
+        mpBarChart.setDrawBarShadow(false)
+        mpBarChart.setDrawValueAboveBar(true)
+        mpBarChart.description.isEnabled = false
+        mpBarChart.setPinchZoom(false)
+        mpBarChart.setDrawGridBackground(false)
 
         // Define the total duration of a day (in minutes)
         val totalMinutesInDay = 24 * 60
 
         // Initialize lists to hold entry data
-        val entries = ArrayList<PieEntry>()
+        val entries = ArrayList<BarEntry>()
         val colors = ArrayList<Int>()
 
         // recordTask에 따른 색상 맵
@@ -144,15 +143,11 @@ class BarChartFragment : Fragment() {
             "BATH" to R.color.bath_orange
         )
 
-        // Create a list to store occupied time slots
-        val occupiedTimeSlots = mutableListOf<IntRange>()
-
         // Iterate over the records
+        var previousEndTime = 0 // 이전 endTime을 추적하기 위한 변수 추가
         for (record in recordResponse) {
             val startTime = getMinutesFromTimeString(record.startTime)
             val endTime = getMinutesFromTimeString(record.endTime)
-            val timeSlot = startTime until endTime
-            occupiedTimeSlots.add(timeSlot)
 
             // Get color based on recordTask
             val colorResId = taskColorMap[record.recordTask] ?: R.color.dark_gray // Default color if not found
@@ -161,56 +156,28 @@ class BarChartFragment : Fragment() {
             // Add the entry for this record with corresponding color
             val duration = endTime - startTime
             val percentage = duration.toFloat() / totalMinutesInDay * 100
-            entries.add(PieEntry(percentage, record.recordTask))
+            entries.add(BarEntry(startTime.toFloat(), percentage))
             colors.add(color)
         }
 
-        // Find the empty time slots and add them as gray entries
-        val emptyTimeSlots = findEmptyTimeSlots(occupiedTimeSlots, totalMinutesInDay)
-        for (emptySlot in emptyTimeSlots) {
-            val duration = emptySlot.last - emptySlot.first
-            val percentage = duration.toFloat() / totalMinutesInDay * 100
-            entries.add(PieEntry(percentage, "Empty"))
-            colors.add(Color.GRAY)
-        }
-
         // Configure the data set
-        val dataSet = PieDataSet(entries, "")
+        val dataSet = BarDataSet(entries, "")
         dataSet.colors = colors
         dataSet.valueTextSize = 16f
         dataSet.valueTextColor = Color.BLACK
+        dataSet.barBorderWidth = 1.0f
 
-        // Create the PieData object and set it to the chart
-        val data = PieData(dataSet)
-        mpPieChart.data = data
+        // Create the BarData object and set it to the chart
+        val data = BarData(dataSet)
+        mpBarChart.data = data
 
         // Refresh the chart
-        mpPieChart.invalidate()
+        mpBarChart.invalidate()
     }
 
-    private fun findEmptyTimeSlots(occupiedTimeSlots: List<IntRange>, totalMinutesInDay: Int): List<IntRange> {
-        val emptyTimeSlots = mutableListOf<IntRange>()
-        var previousEndTime = 0
-
-        for (occupiedSlot in occupiedTimeSlots) {
-            if (occupiedSlot.first > previousEndTime) {
-                val emptySlot = previousEndTime until occupiedSlot.first
-                emptyTimeSlots.add(emptySlot)
-            }
-            previousEndTime = occupiedSlot.last
-        }
-
-        if (previousEndTime < totalMinutesInDay) {
-            val lastEmptySlot = previousEndTime until totalMinutesInDay
-            emptyTimeSlots.add(lastEmptySlot)
-        }
-
-        return emptyTimeSlots
-    }
     private fun getMinutesFromTimeString(timeString: String): Int {
         val parts = timeString.split(" ")[1].split(":")
         return parts[0].toInt() * 60 + parts[1].toInt()
     }
-
 
 }

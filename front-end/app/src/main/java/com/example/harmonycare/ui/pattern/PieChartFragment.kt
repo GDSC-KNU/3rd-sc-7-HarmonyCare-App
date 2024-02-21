@@ -148,6 +148,7 @@ class PieChartFragment : Fragment() {
         val occupiedTimeSlots = mutableListOf<IntRange>()
 
         // Iterate over the records
+        var previousEndTime = 0 // 이전 endTime을 추적하기 위한 변수 추가
         for (record in recordResponse) {
             val startTime = getMinutesFromTimeString(record.startTime)
             val endTime = getMinutesFromTimeString(record.endTime)
@@ -160,17 +161,27 @@ class PieChartFragment : Fragment() {
 
             // Add the entry for this record with corresponding color
             val duration = endTime - startTime
+            if (previousEndTime < startTime) {
+                val emptyDuration = startTime - previousEndTime
+                val emptyPercentage = emptyDuration.toFloat() / totalMinutesInDay * 100
+                entries.add(PieEntry(emptyPercentage, "Empty"))
+                colors.add(Color.GRAY)
+            }
             val percentage = duration.toFloat() / totalMinutesInDay * 100
             entries.add(PieEntry(percentage, record.recordTask))
             colors.add(color)
+
+            // 빈 슬롯 처리
+
+
+            previousEndTime = endTime // 이전 endTime 업데이트
         }
 
-        // Find the empty time slots and add them as gray entries
-        val emptyTimeSlots = findEmptyTimeSlots(occupiedTimeSlots, totalMinutesInDay)
-        for (emptySlot in emptyTimeSlots) {
-            val duration = emptySlot.last - emptySlot.first
-            val percentage = duration.toFloat() / totalMinutesInDay * 100
-            entries.add(PieEntry(percentage, "Empty"))
+        // 마지막 endTime부터 23:59:59까지 빈 슬롯 추가
+        if (previousEndTime < totalMinutesInDay) {
+            val emptyDuration = totalMinutesInDay - previousEndTime
+            val emptyPercentage = emptyDuration.toFloat() / totalMinutesInDay * 100
+            entries.add(PieEntry(emptyPercentage, "Empty"))
             colors.add(Color.GRAY)
         }
 
