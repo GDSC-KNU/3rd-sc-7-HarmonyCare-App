@@ -31,11 +31,9 @@ class PatternFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         _binding = FragmentPatternBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
