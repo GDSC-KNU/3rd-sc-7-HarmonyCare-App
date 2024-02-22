@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.harmonycare.R
-import com.example.harmonycare.data.SharedPreferencesManager
 import com.example.harmonycare.retrofit.ApiService
 import com.example.harmonycare.retrofit.RecordGetRequest
 import com.example.harmonycare.retrofit.RecordGetResponse
@@ -35,6 +34,7 @@ class PieChartFragment : Fragment() {
     private var _binding: FragmentPieChartBinding? = null
     private val binding get() = _binding!!
     private lateinit var selectedDate: Calendar
+    private lateinit var sharedPreferences: SharedPreferences
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,9 +42,10 @@ class PieChartFragment : Fragment() {
     ): View {
         _binding = FragmentPieChartBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
         //sharedPreference 초기화
-        val accessToken = SharedPreferencesManager.getAccessToken()
+        sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        // SharedPreferences에서 authcode 가져오기
+        val accessToken = sharedPreferences.getString("accessToken", null)
 
         selectedDate = Calendar.getInstance()
         updateSelectedDateButtonText()
@@ -56,7 +57,6 @@ class PieChartFragment : Fragment() {
             showDatePickerDialog()
             if (accessToken != null) {
                 fetchRecordsForSelectedDate(accessToken)
-
             }
         }
 
@@ -89,7 +89,7 @@ class PieChartFragment : Fragment() {
         val formattedDate = dateFormat.format(selectedDate.time)
 
         val apiService = RetrofitClient.createService(ApiService::class.java)
-        val call = apiService.getRecordsForDay(formattedDate, 0, "Bearer $authToken")
+        val call = apiService.getRecordsForDay(formattedDate, 2, "Bearer $authToken")
 
         call.enqueue(object : Callback<RecordGetResponse> {
             override fun onResponse(call: Call<RecordGetResponse>, response: Response<RecordGetResponse>) {
@@ -122,11 +122,9 @@ class PieChartFragment : Fragment() {
         mpPieChart.description.isEnabled = false
         mpPieChart.isDrawHoleEnabled = true
         mpPieChart.setHoleColor(Color.WHITE)
-        mpPieChart.holeRadius = 40f // 원의 크기 조정
-        mpPieChart.transparentCircleRadius = 50f
-        mpPieChart.isRotationEnabled = false // 그래프를 드래그해서 돌리는 기능 off
+        mpPieChart.transparentCircleRadius = 61f
         mpPieChart.animateY(1000, Easing.EaseInOutCubic)
-        mpPieChart.centerText = "Day\nD + 3"
+        mpPieChart.centerText = "Day + 3"
         mpPieChart.setCenterTextSize(20f)
         mpPieChart.invalidate()
 
@@ -166,7 +164,7 @@ class PieChartFragment : Fragment() {
             if (previousEndTime < startTime) {
                 val emptyDuration = startTime - previousEndTime
                 val emptyPercentage = emptyDuration.toFloat() / totalMinutesInDay * 100
-                entries.add(PieEntry(emptyPercentage, " "))
+                entries.add(PieEntry(emptyPercentage, "Empty"))
                 colors.add(Color.GRAY)
             }
             val percentage = duration.toFloat() / totalMinutesInDay * 100
@@ -183,7 +181,7 @@ class PieChartFragment : Fragment() {
         if (previousEndTime < totalMinutesInDay) {
             val emptyDuration = totalMinutesInDay - previousEndTime
             val emptyPercentage = emptyDuration.toFloat() / totalMinutesInDay * 100
-            entries.add(PieEntry(emptyPercentage, ""))
+            entries.add(PieEntry(emptyPercentage, "Empty"))
             colors.add(Color.GRAY)
         }
 
@@ -192,7 +190,6 @@ class PieChartFragment : Fragment() {
         dataSet.colors = colors
         dataSet.valueTextSize = 16f
         dataSet.valueTextColor = Color.BLACK
-        dataSet.setDrawValues(false)//퍼센티지 표시 x
 
         // Create the PieData object and set it to the chart
         val data = PieData(dataSet)

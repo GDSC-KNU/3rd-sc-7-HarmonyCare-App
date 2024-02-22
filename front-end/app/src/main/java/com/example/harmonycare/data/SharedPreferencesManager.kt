@@ -24,4 +24,8 @@ object SharedPreferencesManager {
     fun getAccessToken(): String? {
         return sharedPreferences.getString(KEY_AUCCESSTOKEN, null)
     }
+
+    fun clearAccessToken() {
+        sharedPreferences.edit().remove(KEY_AUCCESSTOKEN).apply()
+    }
 }

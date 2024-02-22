@@ -12,6 +12,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.ContextCompat
+import com.example.harmonycare.data.SharedPreferencesManager
 import com.example.harmonycare.databinding.FragmentChecklistBinding
 import java.util.Calendar
 
@@ -35,10 +36,7 @@ class PatternFragment : Fragment() {
     ): View {
         _binding = FragmentPatternBinding.inflate(inflater, container, false)
         val root: View = binding.root
-        //sharedPreference 초기화
-        sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        // SharedPreferences에서 authcode 가져오기
-        val accessToken = sharedPreferences.getString("accessToken", null)
+
         setXMLToggle(true)
         selectedDate = Calendar.getInstance()
         /*updateSelectedDateButtonText()

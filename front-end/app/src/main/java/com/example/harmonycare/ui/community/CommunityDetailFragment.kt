@@ -2,7 +2,6 @@ package com.example.harmonycare.ui.community
 
 import android.app.AlertDialog
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
