@@ -36,6 +36,7 @@ class MyPostFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         binding.fab.visibility = View.GONE
 
         getDataListAndSetAdapter()

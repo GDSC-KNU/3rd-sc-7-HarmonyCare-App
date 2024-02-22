@@ -729,7 +729,3 @@ data class TipResponse(
     val status: Int,
     val response: String
 )
-
-data class getChecklistRequest(
-    val today: String
-)
