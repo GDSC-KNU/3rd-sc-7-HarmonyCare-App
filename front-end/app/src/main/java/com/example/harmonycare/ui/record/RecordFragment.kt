@@ -94,7 +94,7 @@ class RecordFragment : Fragment() {
             val apiManager = ApiManager(apiService)
 
 
-            apiManager.getRecordsForDay(LocalDateTime.now().toLocalDate().toString(), 1, "Bearer $accessToken",
+            apiManager.getRecordsForDay(LocalDateTime.now().toLocalDate().toString(), 0, "Bearer $accessToken",
                 { response ->
                     if (response != null) {
                         onDataLoaded(response)
