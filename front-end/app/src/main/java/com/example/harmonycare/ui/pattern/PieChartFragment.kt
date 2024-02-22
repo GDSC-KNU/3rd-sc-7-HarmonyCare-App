@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.harmonycare.R
 import com.example.harmonycare.data.SharedPreferencesManager
+import com.example.harmonycare.databinding.FragmentCommunityDetailBinding
 import com.example.harmonycare.retrofit.ApiService
 import com.example.harmonycare.retrofit.RecordGetRequest
 import com.example.harmonycare.retrofit.RecordGetResponse
@@ -228,5 +229,4 @@ class PieChartFragment : Fragment() {
         val parts = timeString.split(" ")[1].split(":")
         return parts[0].toInt() * 60 + parts[1].toInt()
     }
-
 }

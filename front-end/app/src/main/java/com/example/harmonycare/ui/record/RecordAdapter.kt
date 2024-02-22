@@ -40,27 +40,27 @@ class RecordAdapter(
         fun bind(record: Record) {
             when (record.recordTask) {
                 "SLEEP"-> {
-                    binding.textTitle.text = "Sleep"
+                    binding.textTitle.text = context.getString(R.string.sleep)
                     binding.textTitle.setTextColor(ContextCompat.getColor(context, R.color.sleep_blue))
                     binding.textCircle.setTextColor(ContextCompat.getColor(context, R.color.sleep_blue))
                 }
                 "MEAL" -> {
-                    binding.textTitle.text = "Meal"
+                    binding.textTitle.text = context.getString(R.string.meal)
                     binding.textTitle.setTextColor(ContextCompat.getColor(context, R.color.meal_green))
                     binding.textCircle.setTextColor(ContextCompat.getColor(context, R.color.meal_green))
                 }
                 "PLAY" -> {
-                    binding.textTitle.text = "Play"
+                    binding.textTitle.text = context.getString(R.string.play)
                     binding.textTitle.setTextColor(ContextCompat.getColor(context, R.color.play_purple))
                     binding.textCircle.setTextColor(ContextCompat.getColor(context, R.color.play_purple))
                 }
                 "DIAPER" -> {
-                    binding.textTitle.text = "Diaper"
+                    binding.textTitle.text = context.getString(R.string.diaper)
                     binding.textTitle.setTextColor(ContextCompat.getColor(context, R.color.diaper_yellow))
                     binding.textCircle.setTextColor(ContextCompat.getColor(context, R.color.diaper_yellow))
                 }
                 "BATH" -> {
-                    binding.textTitle.text = "Bath"
+                    binding.textTitle.text = context.getString(R.string.bath)
                     binding.textTitle.setTextColor(ContextCompat.getColor(context, R.color.bath_orange))
                     binding.textCircle.setTextColor(ContextCompat.getColor(context, R.color.bath_orange))
                 }

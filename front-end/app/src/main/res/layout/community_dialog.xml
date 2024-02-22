@@ -45,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="30dp"
-            android:hint="Title"/>
+            android:hint="@string/please_input_title"/>
 
 
         <EditText
@@ -55,7 +55,7 @@
             android:layout_marginBottom="30dp"
             android:inputType="textMultiLine"
             android:background="@android:color/transparent"
-            android:hint="Please input the description."/>
+            android:hint="@string/please_input_content"/>
 
     </LinearLayout>
 

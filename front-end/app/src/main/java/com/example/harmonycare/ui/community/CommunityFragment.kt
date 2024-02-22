@@ -55,7 +55,7 @@ class CommunityFragment : Fragment() {
                 val content = fullDialogBinding.editContent.text.toString()
 
                 if (title.isBlank() or content.isBlank()) {
-                    makeToast(requireContext(), "please input content")
+                    makeToast(requireContext(), getString(R.string.please_input_content))
                 } else {
                     val accessToken = SharedPreferencesManager.getAccessToken()
 
@@ -68,7 +68,7 @@ class CommunityFragment : Fragment() {
                             if (it == true) {
                                 getDataListAndSetAdapter()
                             } else {
-                                makeToast(requireContext(), "community save failed")
+                                makeToast(requireContext(), getString(R.string.save_failed))
                             }
                         })
                     }
@@ -102,12 +102,11 @@ class CommunityFragment : Fragment() {
             val apiManager = ApiManager(apiService)
 
 
-            apiManager.getCommunity(accessToken,
-                { communityData ->
-                    val sortedData = communityData.sortedByDescending { it.communityId }
-                    onDataLoaded(sortedData)
-                }
-            )
+            apiManager.getCommunity(accessToken
+            ) { communityData ->
+                val sortedData = communityData.sortedByDescending { it.communityId }
+                onDataLoaded(sortedData)
+            }
         }
     }
 

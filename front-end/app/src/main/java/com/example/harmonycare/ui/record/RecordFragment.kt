@@ -22,7 +22,6 @@ import com.example.harmonycare.R
 import com.example.harmonycare.databinding.FragmentRecordBinding
 import com.example.harmonycare.data.Record
 import com.example.harmonycare.data.SharedPreferencesManager
-import com.example.harmonycare.databinding.FragmentChecklistBinding
 import com.example.harmonycare.databinding.RecordDialogBinding
 import com.example.harmonycare.retrofit.ApiManager
 import com.example.harmonycare.retrofit.ApiService
@@ -102,7 +101,7 @@ class RecordFragment : Fragment() {
                         onDataLoaded(response)
                     }
                 },
-                { error ->
+                { _ ->
                     makeToast(requireContext(), "data load failed")
                 }
             )
@@ -168,23 +167,23 @@ class RecordFragment : Fragment() {
 
         when (record.recordTask) {
             "SLEEP" -> {
-                dialogBinding.titleTextView.text = "Sleep"
+                dialogBinding.titleTextView.text = getString(R.string.sleep)
                 dialogBinding.topBar.setBackgroundColor(resources.getColor(R.color.sleep_blue))
             }
             "MEAL" -> {
-                dialogBinding.titleTextView.text = "Meal"
+                dialogBinding.titleTextView.text = getString(R.string.meal)
                 dialogBinding.topBar.setBackgroundColor(resources.getColor(R.color.meal_green))
             }
             "PLAY" -> {
-                dialogBinding.titleTextView.text = "Play"
+                dialogBinding.titleTextView.text = getString(R.string.play)
                 dialogBinding.topBar.setBackgroundColor(resources.getColor(R.color.play_purple))
             }
             "DIAPER" -> {
-                dialogBinding.titleTextView.text = "Diaper"
+                dialogBinding.titleTextView.text = getString(R.string.diaper)
                 dialogBinding.topBar.setBackgroundColor(resources.getColor(R.color.diaper_yellow))
             }
             "BATH" -> {
-                dialogBinding.titleTextView.text = "Bath"
+                dialogBinding.titleTextView.text = getString(R.string.bath)
                 dialogBinding.topBar.setBackgroundColor(resources.getColor(R.color.bath_orange))
             }
         }
@@ -211,16 +210,16 @@ class RecordFragment : Fragment() {
                 val apiManager = ApiManager(apiService)
 
                 apiManager.updateRecord(record.recordId, recordTask, startTime, endTime, description, accessToken, onResponse =
-                {   response ->
+                {   _ ->
                     getDataListAndSetAdapter()
                 },
                 {
-                    error ->
-                    makeToast(requireContext(), "data load failed")
+                    _ ->
+                    makeToast(requireContext(), getString(R.string.update_failed))
                 })
             }
             else {
-                makeToast(requireContext(), "accessToken error")
+                makeToast(requireContext(), getString(R.string.access_token_error))
             }
             bottomSheetDialog.dismiss()
         }
@@ -254,23 +253,12 @@ class RecordFragment : Fragment() {
             apiManager.saveRecord(accessToken, recordTask, startTime, endTime, description, { response ->
                 // HTTP 응답 코드가 201이면 성공으로 간주합니다.
                 if (response == 201) {
-                    // 저장에 성공한 경우
-                    Log.d(TAG, "Record saved successfully. Response code: $response")
-                    // 데이터가 변경됐으므로 RecyclerView를 업데이트
                     getDataListAndSetAdapter()
                 } else {
-                    // HTTP 응답 코드가 201이 아닌 경우 저장에 실패로 간주합니다.
-                    Log.e(TAG, "Failed to save record. Response code: $response")
-                    // 실패 메시지를 사용자에게 표시하거나 다른 처리를 수행할 수 있습니다.
-                    // 예를 들어, 사용자에게 알림을 표시할 수 있습니다.
-                    makeToast(requireContext(), "Failed to save record")
+                    makeToast(requireContext(), getString(R.string.save_failed))
                 }
             }, {
-                // 저장에 실패한 경우
-                Log.e(TAG, "Failed to save record")
-                // 실패 메시지를 사용자에게 표시하거나 다른 처리를 수행할 수 있습니다.
-                // 예를 들어, 사용자에게 알림을 표시할 수 있습니다.
-                makeToast(requireContext(), "Failed to save record")
+                makeToast(requireContext(), getString(R.string.save_failed))
             })
 
         }
@@ -280,7 +268,7 @@ class RecordFragment : Fragment() {
         AlertDialog.Builder(context)
             .setTitle("Delete Confirmation")
             .setMessage("Are you sure you want to delete this record?")
-            .setPositiveButton("Delete") { dialog, which ->
+            .setPositiveButton("Delete") { _, _ ->
                 onDeleteConfirmed()
             }
             .setNegativeButton("Cancel", null)
@@ -295,13 +283,13 @@ class RecordFragment : Fragment() {
             val apiService = RetrofitClient.retrofit.create(ApiService::class.java)
             val apiManager = ApiManager(apiService)
 
-            apiManager.deleteRecord(record.recordId, accessToken, { response ->
-                if (response == true) {
+            apiManager.deleteRecord(record.recordId, accessToken) { response ->
+                if (response) {
                     getDataListAndSetAdapter()
                 } else {
-                    makeToast(requireContext(), "Failed to delete record")
+                    makeToast(requireContext(), getString(R.string.delete_failed))
                 }
-            })
+            }
 
         }
     }
@@ -359,9 +347,9 @@ class RecordFragment : Fragment() {
 
         if (_binding != null) {
             val binding = _binding!!
-            var recentDiaperTime = findRecentTime(diaperRecords)
-            var recentMealTime = findRecentTime(mealRecords)
-            var recentSleepTime = findRecentTime(sleepRecords)
+            val recentDiaperTime = findRecentTime(diaperRecords)
+            val recentMealTime = findRecentTime(mealRecords)
+            val recentSleepTime = findRecentTime(sleepRecords)
 
             binding.recentDiaperTextview.text = recentDiaperTime
             binding.recentMealTextview.text = recentMealTime
@@ -373,29 +361,29 @@ class RecordFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun findRecentTime(records: List<Record>): String {
-        if (records.isEmpty()) return "No record"
+        if (records.isEmpty()) return getString(R.string.no_record)
 
         val currentTime = LocalDateTime.now()
-        val recentRecord = records.maxByOrNull { it.startTime } ?: return "No record"
+        val recentRecord = records.maxByOrNull { it.startTime } ?: return getString(R.string.no_record)
         val difference = Duration.between(recentRecord.startTime, currentTime)
         val differenceMinutes = difference.toMinutes()
 
         return if (differenceMinutes < 60) {
-            "● $differenceMinutes m ago"
+            "● $differenceMinutes${getString(R.string.m_ago)}"
         } else if (differenceMinutes < 1440) {
             val differenceHours = difference.toHours()
             val remainingMinutes = differenceMinutes % 60
             if (remainingMinutes == 0L) {
-                "● $differenceHours h ago"
+                "● $differenceHours${getString(R.string.h_ago)}"
             } else {
-                "● $differenceHours h $remainingMinutes m ago"
+                "● $differenceHours${getString(R.string.h)} $remainingMinutes${getString(R.string.m_ago)}"
             }
         } else {
-            "Long time ago"
+            getString(R.string.long_time_ago)
         }
     }
 
-    fun makeToast(context: Context, message: String, duration: Int = Toast.LENGTH_SHORT) {
+    private fun makeToast(context: Context, message: String, duration: Int = Toast.LENGTH_SHORT) {
         Toast.makeText(context, message, duration).show()
     }
 }

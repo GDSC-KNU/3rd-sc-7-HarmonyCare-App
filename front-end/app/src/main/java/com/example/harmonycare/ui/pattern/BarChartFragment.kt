@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import com.example.harmonycare.databinding.FragmentBarChartBinding
+import com.example.harmonycare.databinding.FragmentCommunityDetailBinding
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
@@ -176,6 +177,13 @@ class BarChartFragment : Fragment() {
     private fun getMinutesFromTimeString(timeString: String): Int {
         val parts = timeString.split(" ")[1].split(":")
         return parts[0].toInt() * 60 + parts[1].toInt()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (_binding == null) {
+            _binding = FragmentBarChartBinding.inflate(layoutInflater)
+        }
     }
 
 }

@@ -70,7 +70,7 @@ class ProfileFragment : Fragment() {
 
         binding.logout.setOnClickListener {
             SharedPreferencesManager.clearAccessToken()
-            makeToast(requireContext(), "logout successful")
+            makeToast(requireContext(), getString(R.string.logout_successful))
             requireActivity().finish()
         }
     }
@@ -79,7 +79,7 @@ class ProfileFragment : Fragment() {
         _binding = null
     }
 
-    fun makeToast(context: Context, message: String, duration: Int = Toast.LENGTH_SHORT) {
+    private fun makeToast(context: Context, message: String, duration: Int = Toast.LENGTH_SHORT) {
         Toast.makeText(context, message, duration).show()
     }
 }

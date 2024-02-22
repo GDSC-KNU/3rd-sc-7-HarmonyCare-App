@@ -35,10 +35,13 @@ class ChecklistFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var adapter: ChecklistAdapter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentChecklistBinding.inflate(inflater, container, false)
-        val view = binding.root
-        return view
+        return binding.root
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -72,7 +75,7 @@ class ChecklistFragment : Fragment() {
                     val weightArray = resources.getStringArray(R.array.weight_array)
                     val growthArray = resources.getStringArray(R.array.growth_array)
 
-                    bottomDialogBinding.textviewMonth.text = "${months+1} months old"
+                    bottomDialogBinding.textviewMonth.text = "${months+1} ${getString(R.string.months_old)}"
                     bottomDialogBinding.textviewHeight.text = heightArray[months]
                     bottomDialogBinding.textviewWeight.text = weightArray[months]
                     bottomDialogBinding.textviewGrowth.text = growthArray[months]
@@ -81,8 +84,7 @@ class ChecklistFragment : Fragment() {
                 val today = LocalDateTime.now().toLocalDate().toString()
 
                 apiManager.getTip(accessToken, today) {
-                    if (it == null) bottomDialogBinding.textviewTip.text = "No tips"
-                    else bottomDialogBinding.textviewTip.text = it
+                    bottomDialogBinding.textviewTip.text = it
                 }
             }
 
@@ -94,25 +96,36 @@ class ChecklistFragment : Fragment() {
             val bottomDialogBinding = ChecklistDialogBinding.inflate(layoutInflater)
             bottomSheetDialog.setContentView(bottomDialogBinding.root)
             bottomDialogBinding.timePicker.setIs24HourView(true)
+            bottomDialogBinding.timePicker.hour = 1
+            bottomDialogBinding.timePicker.minute = 30
 
             bottomDialogBinding.buttonSave.setOnClickListener {
                 val title = bottomDialogBinding.editText.text.toString()
                 val days = mutableListOf<String>()
 
-                if (bottomDialogBinding.toggleButtonMon.isChecked) days.add("MONDAY")
-                if (bottomDialogBinding.toggleButtonTue.isChecked) days.add("TUESDAY")
-                if (bottomDialogBinding.toggleButtonWed.isChecked) days.add("WEDNESDAY")
-                if (bottomDialogBinding.toggleButtonThu.isChecked) days.add("THURSDAY")
-                if (bottomDialogBinding.toggleButtonFri.isChecked) days.add("FRIDAY")
-                if (bottomDialogBinding.toggleButtonSat.isChecked) days.add("SATURDAY")
-                if (bottomDialogBinding.toggleButtonSun.isChecked) days.add("SUNDAY")
+                val toggleButtons = listOf(
+                    bottomDialogBinding.toggleButtonMon,
+                    bottomDialogBinding.toggleButtonTue,
+                    bottomDialogBinding.toggleButtonWed,
+                    bottomDialogBinding.toggleButtonThu,
+                    bottomDialogBinding.toggleButtonFri,
+                    bottomDialogBinding.toggleButtonSat,
+                    bottomDialogBinding.toggleButtonSun
+                )
+
+                toggleButtons.forEachIndexed { index, toggleButton ->
+                    if (toggleButton.isChecked) {
+                        val stringArray = resources.getStringArray(R.array.weeks)
+                        days.add(stringArray[index])
+                    }
+                }
 
                 if (title.isBlank()) {
-                    makeToast(requireContext(), "please input title")
+                    makeToast(requireContext(), getString(R.string.please_input_title))
                     return@setOnClickListener
                 }
                 if (days.isEmpty()) {
-                    makeToast(requireContext(), "please select days of week")
+                    makeToast(requireContext(), getString(R.string.please_select_days))
                     return@setOnClickListener
                 }
                 val accessToken = SharedPreferencesManager.getAccessToken()
@@ -122,14 +135,10 @@ class ChecklistFragment : Fragment() {
                     val apiManager = ApiManager(apiService)
 
                     val checkTime = hourToString(bottomDialogBinding.timePicker.hour, bottomDialogBinding.timePicker.minute)
-                    apiManager.saveChecklist(accessToken, title, days, checkTime, {
-                        if (it == true) {
-                            getDataListAndSetAdapter()
-                        }
-                        else {
-                            makeToast(requireContext(), "checklist save failed")
-                        }
-                    })
+                    apiManager.saveChecklist(accessToken, title, days, checkTime) {
+                        if (it) getDataListAndSetAdapter()
+                        else makeToast(requireContext(), getString(R.string.save_failed))
+                    }
                 }
                 bottomSheetDialog.dismiss()
             }
@@ -172,26 +181,16 @@ class ChecklistFragment : Fragment() {
 
             val today = LocalDateTime.now().toLocalDate().toString()
 
-            apiManager.getChecklist(accessToken, today,
-                { checklistData ->
-                    if (checklistData != null) {
-                        onDataLoaded(checklistData)
-                    }
-                }
-            )
+            apiManager.getChecklist(accessToken, today
+            ) { checklistData ->
+                onDataLoaded(checklistData)
+            }
         }
     }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun dateTimeToString(dateTime: LocalDateTime): String {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd' 'HH:mm:ss")
-        return dateTime.format(formatter)
-    }
-
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getDataListAndSetAdapter() {
         getDataList { checklistData ->
-            adapter = ChecklistAdapter(checklistData,
+            adapter = ChecklistAdapter(requireContext(), checklistData,
                 onItemClick = { checklist ->
                     showDetailDialog(checklist)
                 },
@@ -218,13 +217,10 @@ class ChecklistFragment : Fragment() {
             val apiService = RetrofitClient.retrofit.create(ApiService::class.java)
             val apiManager = ApiManager(apiService)
 
-            apiManager.deleteChecklist(checklist.checklistId, accessToken, { response ->
-                if (response == true) {
-                    getDataListAndSetAdapter()
-                } else {
-                    makeToast(requireContext(), "Failed to delete checklist")
-                }
-            })
+            apiManager.deleteChecklist(checklist.checklistId, accessToken) { response ->
+                if (response) getDataListAndSetAdapter()
+                else makeToast(requireContext(), getString(R.string.delete_failed))
+            }
 
         }
     }
@@ -244,13 +240,21 @@ class ChecklistFragment : Fragment() {
         dialogBinding.timePicker.setIs24HourView(true)
         dialogBinding.timePicker.hour = checklist.checkTime.hour
         dialogBinding.timePicker.minute = checklist.checkTime.minute
-        if (checklist.days.contains("MONDAY")) dialogBinding.toggleButtonMon.isChecked = true
-        if (checklist.days.contains("TUESDAY")) dialogBinding.toggleButtonTue.isChecked = true
-        if (checklist.days.contains("WEDNESDAY")) dialogBinding.toggleButtonWed.isChecked = true
-        if (checklist.days.contains("THURSDAY")) dialogBinding.toggleButtonThu.isChecked = true
-        if (checklist.days.contains("FRIDAY")) dialogBinding.toggleButtonFri.isChecked = true
-        if (checklist.days.contains("SATURDAY")) dialogBinding.toggleButtonSat.isChecked = true
-        if (checklist.days.contains("SUNDAY")) dialogBinding.toggleButtonSun.isChecked = true
+        val stringArray = resources.getStringArray(R.array.weeks)
+        val toggleButtons = listOf(
+            dialogBinding.toggleButtonMon,
+            dialogBinding.toggleButtonTue,
+            dialogBinding.toggleButtonWed,
+            dialogBinding.toggleButtonThu,
+            dialogBinding.toggleButtonFri,
+            dialogBinding.toggleButtonSat,
+            dialogBinding.toggleButtonSun,
+        )
+
+        toggleButtons.forEachIndexed { index, toggleButton ->
+            if (checklist.days.contains(stringArray[index]))
+                toggleButton.isChecked = true
+        }
 
         dialogBinding.buttonClose.setOnClickListener {
             bottomSheetDialog.dismiss()
@@ -259,20 +263,19 @@ class ChecklistFragment : Fragment() {
         dialogBinding.buttonSave.setOnClickListener {
             val title = dialogBinding.editText.text.toString()
             val days = mutableListOf<String>()
-            if (dialogBinding.toggleButtonMon.isChecked) days.add("MONDAY")
-            if (dialogBinding.toggleButtonTue.isChecked) days.add("TUESDAY")
-            if (dialogBinding.toggleButtonWed.isChecked) days.add("WEDNESDAY")
-            if (dialogBinding.toggleButtonThu.isChecked) days.add("THURSDAY")
-            if (dialogBinding.toggleButtonFri.isChecked) days.add("FRIDAY")
-            if (dialogBinding.toggleButtonSat.isChecked) days.add("SATURDAY")
-            if (dialogBinding.toggleButtonSun.isChecked) days.add("SUNDAY")
+
+            toggleButtons.forEachIndexed { index, toggleButton ->
+                if (toggleButton.isChecked) {
+                    days.add(stringArray[index])
+                }
+            }
 
             if (title.isBlank()) {
-                makeToast(requireContext(), "please input title text")
+                makeToast(requireContext(), getString(R.string.please_input_title))
                 return@setOnClickListener
             }
             if (days.isEmpty()) {
-                makeToast(requireContext(), "please select days of week")
+                makeToast(requireContext(), getString(R.string.please_select_days))
                 return@setOnClickListener
             }
             val accessToken = SharedPreferencesManager.getAccessToken()
@@ -286,29 +289,24 @@ class ChecklistFragment : Fragment() {
                     hourToString(dialogBinding.timePicker.hour, dialogBinding.timePicker.minute)
                 apiManager.updateChecklist(
                     checklist.checklistId, accessToken, title, days, checkTime
-                ) { response ->
-                    if (response == true) {
-                        getDataListAndSetAdapter()
-                    } else {
-                        makeToast(requireContext(), "Failed to update checklist")
-                    }
+                ) {
+                    if (it) getDataListAndSetAdapter()
+                    else makeToast(requireContext(), getString(R.string.update_failed))
                 }
-
             }
             bottomSheetDialog.dismiss()
         }
-
         bottomSheetDialog.show()
     }
 
     private fun showDeleteConfirmationDialog(context: Context, onDeleteConfirmed: () -> Unit) {
         AlertDialog.Builder(context)
-            .setTitle("Delete Confirmation")
-            .setMessage("Are you sure you want to delete this checklist?")
-            .setPositiveButton("Delete") { dialog, which ->
+            .setTitle(getString(R.string.delete_dialog_title))
+            .setMessage(getString(R.string.delete_dialog_message))
+            .setPositiveButton(getString(R.string.delete)) { _, _ ->
                 onDeleteConfirmed()
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
 
@@ -329,18 +327,14 @@ class ChecklistFragment : Fragment() {
             val apiService = RetrofitClient.retrofit.create(ApiService::class.java)
             val apiManager = ApiManager(apiService)
 
-            apiManager.toggleChecklist(checklist.checklistId, accessToken, { response ->
-                if (response == true) {
-                    getDataListAndSetAdapter()
-                } else {
-                    makeToast(requireContext(), "Failed to toggle checklist")
-                }
-            })
-
+            apiManager.toggleChecklist(checklist.checklistId, accessToken) { response ->
+                if (response) getDataListAndSetAdapter()
+                else makeToast(requireContext(), getString(R.string.check_failed))
+            }
         }
     }
 
-    fun makeToast(context: Context, message: String, duration: Int = Toast.LENGTH_SHORT) {
+    private fun makeToast(context: Context, message: String, duration: Int = Toast.LENGTH_SHORT) {
         Toast.makeText(context, message, duration).show()
     }
 }
