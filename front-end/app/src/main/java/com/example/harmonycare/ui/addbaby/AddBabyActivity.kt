@@ -1,8 +1,6 @@
 package com.example.harmonycare.ui.addbaby
 
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -24,8 +22,6 @@ class AddBabyActivity : AppCompatActivity() {
     private lateinit var editTextName: EditText
     private lateinit var editTextDOB: EditText
     private lateinit var buttonSubmit: Button
-    private lateinit var sharedPreferences: SharedPreferences
-
 
     private val apiService = RetrofitClient.createService(ApiService::class.java)
 
@@ -57,14 +53,14 @@ class AddBabyActivity : AppCompatActivity() {
                 // 아기 추가 요청 보내기
                 addBaby(accessToken, baby)
             } else {
-                Toast.makeText(this, "Please insert your baby's name and birth.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.please_baby), Toast.LENGTH_SHORT).show()
             }
         }
     }
     private fun addBaby(accessToken: String?, baby: Baby) {
         // accessToken이 null이면 처리하지 않음
         if (accessToken.isNullOrEmpty()) {
-            Toast.makeText(this, "Access token is missing.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.access_token_error), Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -76,7 +72,7 @@ class AddBabyActivity : AppCompatActivity() {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
                     // 성공적으로 추가되었음을 사용자에게 알림
-                    Toast.makeText(this@AddBabyActivity, "아기가 성공적으로 추가되었습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@AddBabyActivity, getString(R.string.save_successful), Toast.LENGTH_SHORT).show()
 
                     // MainActivity로 이동
                     val intent = Intent(this@AddBabyActivity, MainActivity::class.java)
@@ -86,13 +82,13 @@ class AddBabyActivity : AppCompatActivity() {
                     finish()
                 } else {
                     // 실패한 경우에 대한 처리
-                    Toast.makeText(this@AddBabyActivity, "아기 추가에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@AddBabyActivity, getString(R.string.save_failed), Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 // 실패한 경우에 대한 처리
-                Toast.makeText(this@AddBabyActivity, "아기 추가에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@AddBabyActivity, getString(R.string.save_failed), Toast.LENGTH_SHORT).show()
             }
         })
     }

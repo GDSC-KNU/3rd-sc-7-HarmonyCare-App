@@ -12,6 +12,48 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="google_server_client_id">185976520158-phphtutm302clototd3rqgecng4a4bg2.apps.googleusercontent.com</string>
 
+    <string name="months_old">months old</string>
+    <string name="no_tips">No tips</string>
+    <string name="please_input_title">Please input title</string>
+    <string name="please_select_days">Please select days of week</string>
+    <string name="save_failed">Save failed</string>
+    <string name="delete_failed">Delete failed</string>
+    <string name="update_failed">Update failed</string>
+    <string name="delete_dialog_title">Delete Confirmation</string>
+    <string name="delete_dialog_message">Are you sure you want to delete this item?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="check_failed">Check failed</string>
+    <string name="everyday">Everyday</string>
+
+    <string name="please_input_content">Please input content</string>
+
+    <string name="logout_successful">Logout successful</string>
+    <string name="access_token_error">Access token error</string>
+    <string name="sleep">Sleep</string>
+    <string name="bath">Bath</string>
+    <string name="meal">Meal</string>
+    <string name="play">Play</string>
+    <string name="diaper">Diaper</string>
+    <string name="no_record">No record</string>
+
+    <string name="long_time_ago">Long time ago</string>
+    <string name="m_ago">m ago</string>
+    <string name="h_ago">h ago</string>
+    <string name="h">h</string>
+
+    <string name="please_baby">Please insert your baby\'s name and birth.</string>
+    <string name="save_successful">Save successful</string>
+    <string-array name="weeks">
+        <item>MONDAY</item>
+        <item>TUESDAY</item>
+        <item>WEDNESDAY</item>
+        <item>THURSDAY</item>
+        <item>FRIDAY</item>
+        <item>SATURDAY</item>
+        <item>SUNDAY</item>
+    </string-array>
+
     <string-array name="weight_array">
         <item>49~60cm</item>
         <item>52~65cm</item>
@@ -26,6 +68,7 @@
         <item>72~80cm</item>
         <item>73~81cm</item>
     </string-array>
+
     <string-array name="height_array">
         <item>3~5.7kg</item>
         <item>3.9~7.4kg</item>
@@ -40,62 +83,62 @@
         <item>8~11kg</item>
         <item>8.8~12kg</item>
     </string-array>
+
     <string-array name="growth_array">
-        <item>"Distinguish between mother's voice.
-Watch the toy move.
-My limbs are active."
-</item>
-        <item>"I smile at my mom’s face.
-Stretch out your arms and legs.
-I also lie down and lift my chest.
-Start babbling."</item>
-        <item>"Clear your own throat.
-It reacts to sounds and smells.
-Blink your eyes.
-Suck your finger.
-Waving my arms and kicking"</item>
-        <item>"My hair becomes stronger.
-You can extend your arms and grab moving objects.
-Responds to colored toys.
-I can tell my mom’s emotional changes.
-The baby's emotional expression also becomes richer."</item>
-        <item>"My hair is falling out.
-Neck movement becomes more active.
-As your eyesight develops, you become more interested in objects.
-They put everything they see into their mouths.
-You can rock your body left and right and flip over."</item>
-        <item>"Teeth are starting to grow.
-You can lie down and roll over.
-Sit down, extend your arms in the air, and pull them back.
-He tries to hold the toy in both hands, but keeps losing it."</item>
-        <item>"When teething, you bite your fingers.
-Their memory develops, allowing them to explore hidden objects and imitate their mother's actions.
-You can sit alone.
-It is good to be careful about cavities and prevent mouth shape deformation."</item>
-        <item>"I pick up and eat food alone.
-You can move objects from hand to hand.
-Since separation anxiety appears and the child does not want to be separated from its mother, you need to express your love sufficiently.
-It would be good to check the level of motor development."</item>
-        <item>"Start saying repeated consonants.
-They respond to their own name.
-Grasp objects with your thumb and forefinger.
-Find a toy under the handkerchief.
-It is good to check the excretion cycle and the condition of the stool."</item>
-        <item>"He can crawl and stand on his own.
-He is very curious and gets angry when toys are taken away.
-Imitate other people's actions.
-I can hold my mom’s hand and take a step or two.
-As you become more assertive, it's easy for you to cry and throw tantrums."</item>
-        <item>"I can stand up on my own.
-We can walk holding hands.
-Grasp small objects with your thumb and index finger.
-I like to explore with my hands.
-I can hold a cup and drink by myself.
-People you see often will recognize you even after a few days.
-Adjust baby food according to diarrhea/indigestion"</item>
-        <item>"I can distinguish between praise and scolding.
-Shows interest in colorful and vivid pictures.
-You can play simple ball games.
-You can adjust your posture when dressing."</item>
+    <item>"Recognizes mother's voice.
+Watches toys in motion.
+Active limbs."</item>
+        <item>"Smiles at mom's face.
+Stretches arms and legs.
+Lifts chest while lying down.
+Starts babbling."</item>
+        <item>"Clears throat.
+Responds to sounds and smells.
+Blinks eyes.
+Sucks fingers.
+Waves arms and kicks."</item>
+        <item>"Hair becomes stronger.
+Reaches for moving objects.
+Responds to colorful toys.
+Senses mom's emotional changes.
+Emotional expressions become richer."</item>
+        <item>"Hair falls out.
+Neck movement increases.
+Shows interest in objects as eyesight develops.
+Puts everything in mouth.
+Can rock body and flip over."</item>
+        <item>"Teething begins.
+Rolls over.
+Sits, extends arms, and pulls back.
+Attempts to hold toys with both hands."</item>
+        <item>"Bites fingers while teething.
+Memory develops, exploring hidden objects and imitating mom.
+Sits alone.
+Be cautious of cavities and mouth shape."</item>
+        <item>"Self-feeds.
+Transfers objects from hand to hand.
+Shows separation anxiety, needs mom's love.
+Check motor development."</item>
+        <item>"Starts repeating consonants.
+Responds to name.
+Grasps objects with thumb and forefinger.
+Finds toys under objects.
+Check excretion cycle and stool."</item>
+        <item>"Crawls and stands.
+Curious, gets angry when toys taken.
+Imitates actions.
+Takes steps holding mom's hand.
+Assertive, prone to crying and tantrums."</item>
+        <item>"Stands up alone.
+Walks holding hands.
+Grasps small objects.
+Explores with hands.
+Holds cup, drinks.
+People recognize familiar faces.
+Adjusts baby food for digestion."</item>
+        <item>"Distinguishes praise from scolding.
+Interested in colorful pictures.
+Plays simple ball games.
+Adjusts posture when dressing."</item>
     </string-array>
 </resources>

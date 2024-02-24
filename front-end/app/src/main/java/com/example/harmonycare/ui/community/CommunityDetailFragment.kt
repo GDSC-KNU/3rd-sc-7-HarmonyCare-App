@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.addCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.harmonycare.R
 import com.example.harmonycare.data.Comment
@@ -57,7 +56,7 @@ class CommunityDetailFragment : Fragment() {
                         val apiManager = ApiManager(apiService)
 
                         apiManager.saveComment(accessToken, communityId, comment, onResponse = {
-                            if (it == true) {
+                            if (it) {
                                 getDataListAndSetAdapter(communityId)
                             }
                         })
@@ -68,7 +67,7 @@ class CommunityDetailFragment : Fragment() {
                     imm.hideSoftInputFromWindow(binding.editTextComment.windowToken, 0) // 키보드를 숨깁니다.
                     binding.editTextComment.clearFocus()
                 } else {
-                    makeToast(requireContext(), "please input comment")
+                    makeToast(requireContext(), getString(R.string.please_input_content))
                 }
             }
         }
@@ -90,11 +89,10 @@ class CommunityDetailFragment : Fragment() {
             val apiManager = ApiManager(apiService)
 
 
-            apiManager.getComment(accessToken, communityId,
-                { commentData ->
-                    onDataLoaded(commentData)
-                }
-            )
+            apiManager.getComment(accessToken, communityId
+            ) { commentData ->
+                onDataLoaded(commentData)
+            }
         }
     }
 
@@ -112,12 +110,12 @@ class CommunityDetailFragment : Fragment() {
 
     private fun showDeleteConfirmationDialog(context: Context, onDeleteConfirmed: () -> Unit) {
         AlertDialog.Builder(context)
-            .setTitle("Delete Confirmation")
-            .setMessage("Are you sure you want to delete this comment?")
-            .setPositiveButton("Delete") { dialog, which ->
+            .setTitle(getString(R.string.delete_dialog_title))
+            .setMessage(getString(R.string.delete_dialog_message))
+            .setPositiveButton(getString(R.string.delete)) { _, _ ->
                 onDeleteConfirmed()
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
 
@@ -128,18 +126,25 @@ class CommunityDetailFragment : Fragment() {
             val apiService = RetrofitClient.retrofit.create(ApiService::class.java)
             val apiManager = ApiManager(apiService)
 
-            apiManager.deleteComment(accessToken, comment.commentId, { response ->
-                if (response == true) {
+            apiManager.deleteComment(accessToken, comment.commentId) { response ->
+                if (response) {
                     getDataListAndSetAdapter(communityId)
                 } else {
-                    makeToast(requireContext(), "Failed to delete comment")
+                    makeToast(requireContext(), getString(R.string.delete_failed))
                 }
-            })
+            }
 
         }
     }
 
-    fun makeToast(context: Context, message: String, duration: Int = Toast.LENGTH_SHORT) {
+    override fun onResume() {
+        super.onResume()
+        if (binding == null) {
+            binding = FragmentCommunityDetailBinding.inflate(layoutInflater)
+        }
+    }
+
+    private fun makeToast(context: Context, message: String, duration: Int = Toast.LENGTH_SHORT) {
         Toast.makeText(context, message, duration).show()
     }
 }

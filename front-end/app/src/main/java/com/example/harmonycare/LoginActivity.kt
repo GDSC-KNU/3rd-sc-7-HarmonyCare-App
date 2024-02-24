@@ -60,7 +60,7 @@ class LoginActivity : AppCompatActivity() {
                         apiManager.loginUser(authCode,
                             onResponse = { accessToken, hasBaby ->
                                 // accessToken을 저장하거나 필요한 작업을 수행합니다.
-                                showToast("Login successful.")
+                                showToast(getString(R.string.save_successful))
 
                                 SharedPreferencesManager.saveAccessToken(accessToken)
 
@@ -78,7 +78,7 @@ class LoginActivity : AppCompatActivity() {
                         )
 
                     } else {
-                        showToast("There is no accessToken.")
+                        showToast(getString(R.string.access_token_error))
                     }
                     return true // 리다이렉션된 링크 처리를 위해 true 반환
                 }

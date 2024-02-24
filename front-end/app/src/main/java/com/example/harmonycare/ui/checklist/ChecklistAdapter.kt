@@ -1,5 +1,6 @@
 package com.example.harmonycare.ui.checklist
 
+import android.content.Context
 import android.os.Build
 import com.example.harmonycare.databinding.ChecklistItemBinding
 import android.view.LayoutInflater
@@ -8,8 +9,10 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.harmonycare.R
 import com.example.harmonycare.data.Checklist
+import java.util.Locale
 
 class ChecklistAdapter(
+    private val context: Context,
     private val dataList: List<Checklist>,
     private val onItemClick: (Checklist) -> Unit,
     private val onDeleteClick: (Checklist) -> Unit,
@@ -43,9 +46,15 @@ class ChecklistAdapter(
         fun bind(checklist: Checklist) {
             binding.textTitle.text = checklist.title
             var additionalText: String
-            if (checklist.checkTime.hour < 1) additionalText = "${checklist.checkTime.minute} m"
+            if (checklist.checkTime.hour < 1) additionalText = "${checklist.checkTime.minute}m"
             else additionalText = "${checklist.checkTime.hour}h ${checklist.checkTime.minute}m"
-            binding.textCaption.text = "${checklist.days.joinToString(", ") { it.take(3).toLowerCase().capitalize() }}, $additionalText"
+            if (checklist.days.size == 7) binding.textCaption.text = "${context.getString(R.string.everyday)}, $additionalText"
+            else binding.textCaption.text = "${checklist.days.joinToString(", ")
+            {
+                it.take(3)
+                    .lowercase(Locale.getDefault())
+                    .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+            }}, $additionalText"
             if (checklist.isCheck) binding.buttonCheckbox.setImageResource(R.drawable.icon_checkbox_orange)
             else binding.buttonCheckbox.setImageResource(R.drawable.icon_checkbox_gray)
         }

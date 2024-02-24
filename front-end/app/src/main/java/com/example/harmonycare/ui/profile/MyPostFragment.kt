@@ -16,6 +16,7 @@ import com.example.harmonycare.data.Comment
 import com.example.harmonycare.data.Post
 import com.example.harmonycare.data.SharedPreferencesManager
 import com.example.harmonycare.databinding.FragmentCommunityBinding
+import com.example.harmonycare.databinding.FragmentCommunityDetailBinding
 import com.example.harmonycare.retrofit.ApiManager
 import com.example.harmonycare.retrofit.ApiService
 import com.example.harmonycare.retrofit.RetrofitClient
@@ -58,12 +59,11 @@ class MyPostFragment : Fragment() {
             val apiManager = ApiManager(apiService)
 
 
-            apiManager.getMyCommunity(accessToken,
-                { myCommunityData ->
-                    val sortedData = myCommunityData.sortedByDescending { it.communityId }
-                    onDataLoaded(sortedData)
-                }
-            )
+            apiManager.getMyCommunity(accessToken
+            ) { myCommunityData ->
+                val sortedData = myCommunityData.sortedByDescending { it.communityId }
+                onDataLoaded(sortedData)
+            }
         }
     }
 
@@ -91,12 +91,12 @@ class MyPostFragment : Fragment() {
 
     private fun showDeleteConfirmationDialog(context: Context, onDeleteConfirmed: () -> Unit) {
         AlertDialog.Builder(context)
-            .setTitle("Delete Confirmation")
-            .setMessage("Are you sure you want to delete this comment?")
-            .setPositiveButton("Delete") { dialog, which ->
+            .setTitle(getString(R.string.delete_dialog_title))
+            .setMessage(getString(R.string.delete_dialog_message))
+            .setPositiveButton(getString(R.string.delete)) { _, _ ->
                 onDeleteConfirmed()
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
 
@@ -107,24 +107,31 @@ class MyPostFragment : Fragment() {
             val apiService = RetrofitClient.retrofit.create(ApiService::class.java)
             val apiManager = ApiManager(apiService)
 
-            apiManager.deleteAllComment(accessToken, post.communityId, { responseComment ->
-                if (responseComment == true) {
-                    apiManager.deleteCommunity(accessToken, post.communityId, { response ->
-                        if (response == true) {
+            apiManager.deleteAllComment(accessToken, post.communityId) { responseComment ->
+                if (responseComment) {
+                    apiManager.deleteCommunity(accessToken, post.communityId) { response ->
+                        if (response) {
                             getDataListAndSetAdapter()
                         } else {
-                            makeToast(requireContext(), "Failed to delete community")
+                            makeToast(requireContext(), getString(R.string.delete_failed))
                         }
-                    })
+                    }
                 }
-            })
+            }
 
 
         }
     }
 
-    fun makeToast(context: Context, message: String, duration: Int = Toast.LENGTH_SHORT) {
+    private fun makeToast(context: Context, message: String, duration: Int = Toast.LENGTH_SHORT) {
         Toast.makeText(context, message, duration).show()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (_binding == null) {
+            _binding = FragmentCommunityBinding.inflate(layoutInflater)
+        }
     }
 
     override fun onDestroyView() {
