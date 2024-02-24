@@ -40,7 +40,6 @@ class BarChartFragment : Fragment() {
     private var _binding: FragmentBarChartBinding? = null
     private val binding get() = _binding!!
     private lateinit var selectedDate: Calendar
-    //private lateinit var weeklyStart:String
 
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
@@ -147,6 +146,7 @@ class BarChartFragment : Fragment() {
         mpBarChart.xAxis.isEnabled = false
         mpBarChart.axisLeft.isEnabled = false
         mpBarChart.axisRight.isEnabled = false
+        mpBarChart.animateXY(1000, 1000)
 
         val description = Description()
         description.text = "Unit: minutes"

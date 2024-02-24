@@ -29,12 +29,17 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import com.example.harmonycare.databinding.FragmentPieChartBinding
+import com.example.harmonycare.retrofit.ApiManager
+import java.util.Date
+import java.util.concurrent.TimeUnit
 
 class PieChartFragment : Fragment() {
 
     private var _binding: FragmentPieChartBinding? = null
     private val binding get() = _binding!!
     private lateinit var selectedDate: Calendar
+    private var birthDate:String = ""
+
     @SuppressLint("MissingInflatedId")
 
     override fun onCreateView(
@@ -52,6 +57,14 @@ class PieChartFragment : Fragment() {
 
         if (accessToken != null) {
             fetchRecordsForSelectedDate(accessToken)
+            if (accessToken.isNotEmpty()) {
+                val apiService = RetrofitClient.retrofit.create(ApiService::class.java)
+                val apiManager = ApiManager(apiService)
+
+                apiManager.getProfile(accessToken, onResponse = {
+                    birthDate = it.babyBirthDate.split(" ")[0]
+                })
+            }
         }
         binding.button.setOnClickListener {
             showDatePickerDialog()
@@ -66,11 +79,16 @@ class PieChartFragment : Fragment() {
     }
 
     private fun showDatePickerDialog() {
+        val accessToken = SharedPreferencesManager.getAccessToken()
         val datePickerDialog = DatePickerDialog(
             requireContext(),
             { _, year, month, dayOfMonth ->
                 selectedDate.set(year, month, dayOfMonth)
                 updateSelectedDateButtonText()
+                // 선택한 날짜가 변경되었으므로 Pie Chart를 업데이트합니다.
+                if (accessToken != null) {
+                    fetchRecordsForSelectedDate(accessToken)
+                }
             },
             selectedDate.get(Calendar.YEAR),
             selectedDate.get(Calendar.MONTH),
@@ -100,6 +118,7 @@ class PieChartFragment : Fragment() {
                     } else {
                         // Handle null response
                     }
+
                 } else {
                     // Handle unsuccessful response
                 }
@@ -124,10 +143,14 @@ class PieChartFragment : Fragment() {
         mpPieChart.setHoleColor(Color.WHITE)
         mpPieChart.holeRadius = 40f // 원의 크기 조정
         mpPieChart.transparentCircleRadius = 50f
+        mpPieChart.animateY(1000, Easing.EaseInOutCubic)
         mpPieChart.isRotationEnabled = false // 그래프를 드래그해서 돌리는 기능 off
-        mpPieChart.centerText = "Day\nD + 3"
         mpPieChart.setCenterTextSize(20f)
         mpPieChart.invalidate()
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val formattedDate = dateFormat.format(selectedDate.time)
+        val dateDifferenceInDays = getDateDifferenceInDays(birthDate, formattedDate)
+        mpPieChart.centerText = "Day\nD + $dateDifferenceInDays"
 
         // Define the total duration of a day (in minutes)
         val totalMinutesInDay = 24 * 60
@@ -217,8 +240,19 @@ class PieChartFragment : Fragment() {
             val lastEmptySlot = previousEndTime until totalMinutesInDay
             emptyTimeSlots.add(lastEmptySlot)
         }
-
         return emptyTimeSlots
+    }
+    private fun getDateDifferenceInDays(startDate: String, endDate: String): Int {
+        if (startDate.isEmpty() || endDate.isEmpty()) {
+            return 0 // 날짜가 없으면 0일 반환
+        }
+
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val startDateFormatted = dateFormat.parse(startDate) ?: Date()
+        val endDateFormatted = dateFormat.parse(endDate) ?: Date()
+
+        val diffInMillis = endDateFormatted.time - startDateFormatted.time
+        return TimeUnit.MILLISECONDS.toDays(diffInMillis).toInt()
     }
     private fun getMinutesFromTimeString(timeString: String): Int {
         val parts = timeString.split(" ")[1].split(":")
