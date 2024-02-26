@@ -12,7 +12,7 @@ This app is for reducing the neglect of self-care among parents during childcare
   <tr>
     <td>Android</td>
     <td>Backend</td>
-    <td>Backend</td>
+    <td>Backend, Web Frontend</td>
     <td>Android</td>
   </tr>
   <tr>
